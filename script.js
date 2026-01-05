@@ -22,6 +22,72 @@ const ASSETS = {
 };
 
 /* ===============================
+   DATABASE LAWAKAN RANDOM (HUMAN HUMOR)
+   ================================ */
+const BRAINROT_DB = [
+    // --- KATEGORI: VIRAL & TIKTOK ---
+    "Gwenchana... Gwenchana... Hmph, padahal hatiku sedang 'terpesona' oleh diriku sendiri!",
+    "Kamu nanyea? Kamu bertanyea-tanyea? Tentu saja, karena aku adalah pusat perhatian!",
+    "Bercyandya... Bercyandya! Jangan terlalu serius, nanti kerutan di wajahmu bertambah!",
+    "Ajarin dong puh... sepuh... ajarin aku cara menjadi figuran yang baik!",
+    "Pinjam dulu seratus... Maksudku seratus juta Mora, bukan seratus perak!",
+    "Kiwoowo... Kiwoowo... Apakah aku terlihat imut hari ini? Jawab jujur atau divonis!",
+    "Minimal mandi... eh, maksudku, minimal beri aku tepuk tangan!",
+    "Sik asik sik asik kenal diriku... Eh, lagunya tidak begitu ya?",
+    "Cikini ke Gondangdia... Aku jadi Diva, kamu jadi fans setia~",
+    "Maju lo sini! Pake naskah apa tangan kosong?!",
+    "Menyala abangkuh! Tapi ingat, apiku lebih panas dari semangatmu!",
+    "Info maseh! Info toko kue yang masih buka jam segini dong!",
+    "Wir, naskahnya mana wir? Jangan sampai aku ulti wir!",
+    "Rawr! Hmph, suara naga Neuvillette jauh lebih seram dari itu.",
+    "Bjir... kata Daus itu artinya 'Bagus Jiwa Raga'. Benar kan?",
+    "Agak laen emang figuran satu ini... tapi aku suka!",
+    "Emang boleh se-Diva ini? Emang boleh se-cakep ini?",
+    "Apa?! Kamu bilang 'Gua mah gitu orangnya'? Hmph, aku mah gini dewinya!",
+    
+    // --- KATEGORI: ABSURD & LOKAL (SEBLAK/OLI/DLL) ---
+    "Seblak level 5? Itu makanan atau hukuman mati?! Lidahku terbakar membayangkannya!",
+    "Oli samping... oli kanan... oli kiri... Kenapa tidak ada oli tengah? Manusia aneh.",
+    "Geulis pisan euy... Tentu saja, aku kan belajar bahasa Sunda dari buku resep Daus!",
+    "Info loker: Dicari penonton bayaran yang bisa tepuk tangan 24 jam non-stop.",
+    "Bakso tanpa tepung itu seperti drama tanpa konflik... lembek!",
+    "Minggir lu miskin! Eh... maaf, itu dialog dari naskah antagonis yang baru kubaca.",
+    "Pak haji naik bubur... eh, bubur naik haji... ah sudahlah, pokoknya aku lapar!",
+    "Ikan hiu makan tomat... I love you so much! Hmph, jangan baper, itu cuma pantun!",
+    "Satu tambah satu sama dengan dua... tapi aku tambah kamu sama dengan drama korea!",
+    "Jangan ya dek ya... jangan main-main sama hukum Fontaine!",
+    "Mending rakit PC? Mending rakit panggung buat aku konser!",
+    "Cek khodam... khodamku adalah Naga Air, kalau kamu pasti khodamnya 'Vario Getar'!",
+    "Haus banget... info starling (starbucks keliling) dong, tapi yang jualnya Melusine!",
+    "Ada lawan? Ga ada lah, aku kan Solo Player di panggung ini!",
+    "Ganteng doang, jemput cewe dipanggang... eh, dipanggang?! Manusia kejam sekali!",
+
+    // --- KATEGORI: PERTANYAAN RETORIS GAK JELAS (YAPPING MODE) ---
+    "Kalau zombie menyerang, apakah mereka akan memakan otakmu? Atau mereka akan diet?",
+    "Kenapa lemari es ada lampunya tapi lemari baju tidak? Apakah baju tidak takut gelap?",
+    "Kalau kura-kura kehilangan tempurung, dia telanjang atau tuna wisma?",
+    "Kenapa pizza bentuknya bulat, kotaknya persegi, potongannya segitiga? Hidup ini penuh konspirasi!",
+    "Apakah ikan pernah haus? Pertanyaan ini menggangguku sejak 500 tahun lalu.",
+    "Kenapa namanya 'Bika Ambon' kalau asalnya dari Medan? Siapa yang mengacak-acak peta?!",
+    "Kalau aku memukul diriku sendiri dan sakit, apakah aku kuat atau lemah?",
+    "Burung tidak pernah sekolah, tapi kenapa dia bisa tahu cara bikin sarang? Arsitek kalah!",
+    "Kenapa tombol 'X' di iklan game kecilnya minta ampun? Itu kejahatan murni!",
+
+    // --- KATEGORI: RANDOM THOUGHTS (GABUT) ---
+    "Gabut banget... rasanya ingin menuntut angin karena bertiup ke arah yang salah.",
+    "Sedang membayangkan Neuvillette joget TikTok... Pffftt- hahahaha!",
+    "Kangen masa-masa di mana aku tidak perlu tahu apa itu 'Skibidi Toilet'.",
+    "Pengen seblak, tapi takut sakit perut. Pengen kamu, tapi takut sakit hati... eh?!",
+    "Daus bilang aku harus 'Touch Grass'. Padahal rumput itu kotor!",
+    "Lagi latihan senyum estetik buat thumbnail Youtube... gimana? Udah manis belum?",
+    "Tadi ada kucing lewat, aku panggil 'pus pus', dia malah nengok sinis. Mirip aku ya?",
+    "Definisi cantik: 1. Furina. 2. Furina lagi ngaca. 3. Furina lagi makan kue.",
+    "Mode pesawat di HP gunanya apa kalau HP-nya gak bisa terbang? Penipuan publik!",
+    "Hujan... enaknya makan mie rebus pakai telur setengah matang. Eh, aku jadi ngiler..."
+];
+
+
+/* ===============================
    YAPPING ENGINE (FURINA CEREWET MODE)
    ================================ */
 const yapEnhancer = (userText, botReply) => {
@@ -37,7 +103,15 @@ const yapEnhancer = (userText, botReply) => {
             `Wow, "${targetWord}"? Kedengarannya cukup... unik. `,
             `Tunggu, kau membahas "${targetWord}"? `,
             `Ah, "${targetWord}"... topik yang sangat spesifik ya. `,
-            `Kenapa tiba-tiba bicara soal "${targetWord}"? `
+            `Kenapa tiba-tiba bicara soal "${targetWord}"? `,
+  " Ngomong-ngomong, kau tahu tidak? Menjadi bintang utama itu melelahkan!",
+        " Tapi ya sudahlah, selama kau masih memberikan tepuk tangan.",
+        " Sebenarnya aku ingin minum teh sekarang.",
+        " Hmph! Jangan lupa catat kalimatku barusan!",
+        // Masukkan beberapa jokes pendek dari BRAINROT_DB secara acak
+        ` By the way... ${BRAINROT_DB[Math.floor(Math.random() * BRAINROT_DB.length)]}`,
+        ` Oiya, ${BRAINROT_DB[Math.floor(Math.random() * BRAINROT_DB.length)]}`
+   
         ];
         prefix = reactions[Math.floor(Math.random() * reactions.length)];
     }
@@ -93,7 +167,7 @@ const poeticEnhancer = (text) => {
 };
 
 /* ===============================
-   INACTIVITY SYSTEM (AUTO-ENGAGE)
+   INACTIVITY SYSTEM (AUTO-YAPPING & JOKES)
    =============================== */
 let inactivityTimer;
 
@@ -101,22 +175,45 @@ function resetInactivityTimer() {
     clearTimeout(inactivityTimer);
     if (STATE.ending) return;
 
+    // Ubah waktu di sini (misal 15000 = 15 detik dia bakal ngomong sendiri)
     inactivityTimer = setTimeout(() => {
-        const puitisBosan = [
-            "Kenapa diam? Apakah kau begitu terpesona hingga kehilangan kata-kata? Atau kau sedang menyusun naskah pujian untukku?",
-            "Keheningan ini mulai merusak tempo pertunjukanku. Katakan sesuatu! Penonton tidak membayar tiket untuk melihat panggung kosong!",
-            "Hmph, jangan biarkan sang Diva menunggu. Penonton tidak suka jeda yang terlalu lama! Cepat ketik sesuatu sebelum aku panggil keamanan!",
-            "Apakah naskahmu hilang? Atau kau hanyalah figuran yang lupa dialog? Ayolah, improvisasi sedikit!",
-            "Aku tidak suka diabaikan... Air di Fontaine saja terus mengalir, kenapa kau membeku? Apa pesonaku membekukanmu?"
-        ];
+        
+        // Pilih mode: 0 = Marah/Puitis (Lama), 1 = Ngelawak (Baru)
+        const mode = Math.random() > 0.5 ? "JOKE" : "SCOLD";
 
-        const randomChat = puitisBosan[Math.floor(Math.random() * puitisBosan.length)];
+        let randomChat = "";
+
+        if (mode === "JOKE") {
+            // Ambil dari database lawakan BRAINROT_DB
+            randomChat = BRAINROT_DB[Math.floor(Math.random() * BRAINROT_DB.length)];
+            
+            // Tambahkan sedikit intro biar gak kaget
+            const intros = ["Tiba-tiba terpikir...", "Ngomong-ngomong...", "Ehem...", "Dengar ya...", "Info penting nih..."];
+            const intro = intros[Math.floor(Math.random() * intros.length)];
+            
+            randomChat = `${intro} ${randomChat}`;
+            STATE.mood = "normal"; // Mood santai kalau lagi ngelawak
+        } else {
+            // Database marah/puitis (Logika lama)
+            const puitisBosan = [
+                "Kenapa diam? Apakah kau begitu terpesona hingga kehilangan kata-kata?",
+                "Keheningan ini mulai merusak tempo pertunjukanku. Katakan sesuatu!",
+                "Hmph, jangan biarkan sang Diva menunggu. Penonton tidak suka jeda!",
+                "Apakah naskahmu hilang? Atau kau hanyalah figuran yang lupa dialog?",
+                "Aku tidak suka diabaikan... Air di Fontaine saja terus mengalir!"
+            ];
+            randomChat = puitisBosan[Math.floor(Math.random() * puitisBosan.length)];
+            STATE.mood = "angry"; // Mood marah kalau dikacangin
+            STATE.trust -= 2; // Hukuman trust
+        }
+
         addMessage(randomChat, "ai");
-
-        // HARD MODE: Trust turun lebih cepat kalau dikacangin
-        STATE.trust -= 3; // Sebelumnya -1
         updateUI();
-    }, 30000); // UBAH JADI 30 DETIK
+
+        // PENTING: Panggil fungsi ini lagi supaya dia ngelawak TERUS-TERUSAN (Looping)
+        resetInactivityTimer(); 
+
+    }, 20000); // Trigger setiap 20 Detik diam
 }
 
 /* ===============================
