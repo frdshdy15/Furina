@@ -1,109 +1,114 @@
 /* ===================================================
-   ROOT & BASIC
+   FURINA THEME: FONTAINE ELEGANCE
    =================================================== */
+
 :root {
-    --bg-dark: #050a18;
-    --furina-blue: #6fd3ff;
-    --furina-white: #eaf6ff;
-    --furina-glow: 0 0 15px rgba(111, 211, 255, 0.6);
-    --angry-red: #ff3e3e;
-    --angry-glow: 0 0 20px rgba(255, 62, 62, 0.8);
-    --warm-teal: #6fffd2;
+    --primary-blue: #6fd3ff;
+    --light-blue: #e3f6ff;
+    --fontaine-white: #ffffff;
+    --gold-accent: #f3d17a;
+    --danger-red: #ff4d4d;
+    --glass: rgba(255, 255, 255, 0.2);
+    --shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: var(--bg-dark);
-    color: var(--furina-white);
     height: 100vh;
-    overflow: hidden; /* Mencegah body goyang, yang scroll cukup chatbox */
+    background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 50%, #bae6fd 100%);
+    color: #2c3e50;
+    overflow: hidden;
     transition: all 0.5s ease;
 }
 
-/* ===================================================
-   THEME STATES (NORMAL, WARM, ANGRY)
-   =================================================== */
-body.mood-normal { background: radial-gradient(circle at top, #0e1b3d, #050a18); }
-body.mood-warm { background: radial-gradient(circle at top, #0e2b2b, #050a18); }
-body.mood-angry { background: radial-gradient(circle at top, #3d0e0e, #050a18); }
-
-/* Efek Getar saat Marah */
-@keyframes shake {
-    0% { transform: translate(1px, 1px); }
-    20% { transform: translate(-2px, 0); }
-    40% { transform: translate(2px, 1px); }
-    100% { transform: translate(0, 0); }
-}
-body.mood-angry .app-container { animation: shake 0.3s infinite; }
-
-/* ===================================================
-   APP LAYOUT
-   =================================================== */
-.app-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    max-width: 600px;
-    margin: 0 auto;
-    border-left: 1px solid rgba(255,255,255,0.05);
-    border-right: 1px solid rgba(255,255,255,0.05);
+/* MOOD: NORMAL (BIRU MUDA PUTIH) */
+body.mood-normal {
+    background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 50%, #bae6fd 100%);
 }
 
-/* HEADER */
+/* MOOD: WARM (LEBIH CERAH & GLOWING) */
+body.mood-warm {
+    background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 50%, #dcfce7 100%);
+}
+
+/* MOOD: ANGRY (MERAH TERANG NEON) */
+body.mood-angry {
+    background: linear-gradient(135deg, #fee2e2 0%, #ffffff 50%, #fecaca 100%);
+}
+body.mood-angry .main-header { border-bottom: 2px solid var(--danger-red); }
+body.mood-angry .trust-pill { background: var(--danger-red); box-shadow: 0 0 15px var(--danger-red); }
+
+/* ===================================================
+   HEADER (FLOATING GLASS)
+   =================================================== */
 .main-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
     padding: 15px 20px;
-    background: rgba(10, 20, 45, 0.8);
+    background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);
-    border-bottom: 2px solid var(--furina-blue);
-    box-shadow: var(--furina-glow);
-    z-index: 10;
-}
-
-.header-content {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 
-.avatar-box {
-    position: relative;
-}
+.header-left { display: flex; align-items: center; gap: 12px; }
 
+.avatar-wrapper { position: relative; }
 #mini-avatar {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
-    border: 2px solid var(--furina-blue);
+    border: 2px solid var(--primary-blue);
+    box-shadow: 0 0 10px var(--primary-blue);
     object-fit: cover;
 }
 
-.glow-soft { box-shadow: var(--furina-glow); }
-
-.user-info h1 {
-    font-family: 'Cinzel', serif;
-    font-size: 1.1rem;
-    color: var(--furina-blue);
-    text-shadow: var(--furina-glow);
+.status-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    background: #4ade80;
+    border: 2px solid white;
+    border-radius: 50%;
 }
 
-.trust-badge {
-    margin-left: auto;
-    background: rgba(255,255,255,0.1);
-    padding: 5px 12px;
+.info h1 { font-size: 14px; font-weight: 600; color: #0369a1; letter-spacing: 1px; }
+.info small { font-size: 10px; color: #64748b; }
+
+.trust-pill {
+    background: var(--primary-blue);
+    color: white;
+    padding: 6px 12px;
     border-radius: 20px;
-    color: #ff6b6b;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 4px 10px rgba(111, 211, 255, 0.4);
 }
 
 /* ===================================================
-   CHAT VIEWPORT (SCROLL AREA)
+   CHAT AREA (SCROLLABLE)
    =================================================== */
+.app-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-top: 80px; /* Ruang untuk header */
+}
+
 .chat-viewport {
     flex: 1;
     overflow-y: auto;
@@ -111,93 +116,80 @@ body.mood-angry .app-container { animation: shake 0.3s infinite; }
     display: flex;
     flex-direction: column;
     gap: 15px;
-    background: rgba(0,0,0,0.2);
+    scroll-behavior: smooth;
 }
 
-/* Custom Scrollbar */
-.chat-viewport::-webkit-scrollbar { width: 4px; }
-.chat-viewport::-webkit-scrollbar-thumb { background: var(--furina-blue); border-radius: 10px; }
+/* Webkit Scrollbar */
+.chat-viewport::-webkit-scrollbar { width: 5px; }
+.chat-viewport::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
 
-/* BUBBLE CHAT */
-.msg {
-    max-width: 85%;
-    display: flex;
-    flex-direction: column;
-    animation: slideUp 0.3s ease;
-}
+/* BUBBLES */
+.msg { display: flex; max-width: 85%; align-items: flex-end; gap: 8px; animation: fadeInUp 0.3s ease; }
 
-@keyframes slideUp {
+@keyframes fadeInUp {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-.msg.user {
-    align-self: flex-end;
-    align-items: flex-end;
-}
-
-.msg.ai {
-    align-self: flex-start;
-    align-items: flex-start;
-}
-
-.bubble {
-    padding: 12px 16px;
-    border-radius: 18px;
-    font-size: 0.95rem;
-    line-height: 1.4;
-    position: relative;
-}
-
-.msg.user .bubble {
-    background: var(--furina-blue);
-    color: #000;
-    border-bottom-right-radius: 2px;
-    font-weight: 500;
-}
-
-.msg.ai .bubble {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--furina-white);
-    border: 1px solid rgba(111, 211, 255, 0.3);
-    border-bottom-left-radius: 2px;
-    backdrop-filter: blur(5px);
-}
+.msg.ai { align-self: flex-start; }
+.msg.user { align-self: flex-end; flex-direction: row-reverse; }
 
 .chat-img-bubble {
-    width: 150px;
-    height: 150px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
     object-fit: cover;
-    border-radius: 12px;
-    margin-bottom: 8px;
-    border: 2px solid var(--furina-blue);
-    box-shadow: var(--furina-glow);
+    border: 1px solid white;
+    box-shadow: var(--shadow);
+}
+
+.msg p {
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.5;
+    box-shadow: var(--shadow);
+}
+
+.msg.ai p {
+    background: white;
+    color: #334155;
+    border-bottom-left-radius: 4px;
+}
+
+.msg.user p {
+    background: var(--primary-blue);
+    color: white;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 15px rgba(111, 211, 255, 0.3);
 }
 
 /* ===================================================
-   INPUT SECTION
+   INPUT AREA
    =================================================== */
 .input-section {
     padding: 20px;
-    background: rgba(10, 20, 45, 0.9);
+    background: white;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    box-shadow: 0 -10px 25px rgba(0,0,0,0.05);
 }
 
-.input-wrapper {
+.input-container {
     display: flex;
     gap: 10px;
-    background: rgba(255,255,255,0.05);
-    padding: 5px;
-    border-radius: 25px;
-    border: 1px solid rgba(111, 211, 255, 0.2);
+    background: #f1f5f9;
+    padding: 5px 5px 5px 15px;
+    border-radius: 30px;
 }
 
 #userInput {
     flex: 1;
-    background: transparent;
     border: none;
+    background: transparent;
     outline: none;
-    color: white;
-    padding-left: 15px;
+    font-family: inherit;
+    font-size: 14px;
 }
 
 #sendBtn {
@@ -205,39 +197,47 @@ body.mood-angry .app-container { animation: shake 0.3s infinite; }
     height: 45px;
     border-radius: 50%;
     border: none;
-    background: var(--furina-blue);
-    color: #000;
+    background: var(--primary-blue);
+    color: white;
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.2s;
 }
 
-#sendBtn:hover { transform: scale(1.1); box-shadow: var(--furina-glow); }
+#sendBtn:active { transform: scale(0.9); }
+
+.credits {
+    text-align: center;
+    font-size: 10px;
+    margin-top: 10px;
+    color: #94a3b8;
+}
 
 /* ===================================================
-   MODALS
+   MODALS (GLASS GLASS GLASS)
    =================================================== */
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.85);
+    background: rgba(224, 242, 254, 0.8);
     backdrop-filter: blur(8px);
-    display: none;
     z-index: 1000;
+    display: none;
     align-items: center;
     justify-content: center;
+    padding: 20px;
 }
 
 .modal-overlay.active { display: flex; }
 
 .modal-window {
-    background: #101830;
-    width: 90%;
+    background: white;
+    width: 100%;
     max-width: 400px;
-    padding: 25px;
-    border-radius: 25px;
-    border: 2px solid var(--furina-blue);
+    padding: 30px;
+    border-radius: 30px;
     text-align: center;
-    box-shadow: var(--furina-glow);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255,255,255,0.5);
 }
 
 .modal-avatar {
@@ -245,29 +245,50 @@ body.mood-angry .app-container { animation: shake 0.3s infinite; }
     height: 100px;
     border-radius: 50%;
     margin-bottom: 15px;
-    object-fit: cover;
-    border: 3px solid var(--furina-blue);
+    border: 3px solid var(--primary-blue);
+}
+
+.rules-list {
+    text-align: left;
+    list-style: none;
+    margin: 20px 0;
+}
+
+.rules-list li {
+    font-size: 13px;
+    margin-bottom: 10px;
+    color: #475569;
+}
+
+.rules-list i { color: var(--primary-blue); margin-right: 10px; }
+
+#usernameInput {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: 1.5px solid #e2e8f0;
+    outline: none;
+    margin-bottom: 20px;
 }
 
 .btn-primary {
-    background: var(--furina-blue);
+    width: 100%;
+    padding: 12px;
+    border-radius: 25px;
     border: none;
-    padding: 12px 25px;
-    border-radius: 20px;
+    background: var(--primary-blue);
+    color: white;
     font-weight: 600;
-    margin-top: 20px;
-    cursor: pointer;
-    font-family: 'Poppins';
+    box-shadow: 0 4px 15px rgba(111, 211, 255, 0.4);
 }
 
+/* VICTORY STYLE */
 .flag-box {
-    background: #000;
+    background: #f8fafc;
     padding: 15px;
-    margin-top: 15px;
-    border-radius: 10px;
-    border: 1px dashed var(--furina-blue);
+    border-radius: 15px;
+    margin: 20px 0;
+    border: 1px dashed var(--primary-blue);
 }
 
-.flag-box code { color: var(--furina-blue); font-weight: bold; }
-
-.credits { font-size: 10px; text-align: center; margin-top: 10px; opacity: 0.5; }
+.flag-box code { color: #0369a1; font-weight: bold; font-size: 12px; }
