@@ -2,105 +2,88 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Furina: The Final Judgment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Furina Project</title>
     
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="mood-normal">
 
-    <div id="vignette"></div>
+    <div id="screen-loading" class="screen active">
+        <div class="loader"></div>
+        <p>Mempersiapkan Panggung...</p>
+    </div>
 
-    <section id="loading" class="screen active">
-        <div class="loader-container">
-            <div class="loader-ring"></div>
-            <p>Mempersiapkan Panggung Opera...</p>
-        </div>
-    </section>
-
-    <section id="welcome" class="screen">
-        <div class="layer-content">
-            <header class="profile-intro">
-                <div class="avatar-glow">
-                    <img src="5.jpeg" alt="Furina" class="avatar-main">
-                </div>
-                <h1 class="title-main">THE FINAL JUDGMENT</h1>
-            </header>
-
-            <div class="rules-card">
-                <div class="rule"><i class="fas fa-star"></i> <span>Bintang Utama: Furina</span></div>
-                <div class="rule"><i class="fas fa-ban"></i> <span>Anti Copy-Paste</span></div>
-                <div class="rule"><i class="fas fa-bolt"></i> <span>Sistem Sentimen Aktif</span></div>
+    <div id="screen-welcome" class="screen">
+        <div class="content-wrap">
+            <div class="avatar-circle">
+                <img src="5.jpeg" alt="Furina">
+            </div>
+            <h1>THE FINAL JUDGMENT</h1>
+            
+            <div class="rules-list">
+                <p><i class="fas fa-star"></i> Furina adalah bintang utama.</p>
+                <p><i class="fas fa-shield-alt"></i> Dilarang Copy-Paste.</p>
             </div>
 
-            <div class="input-section">
-                <input type="text" id="usernameInput" placeholder="Siapa namamu, figuran?" autocomplete="off">
-                <button id="startBtn" class="btn-glow">Masuk Ke Panggung</button>
+            <div class="input-box">
+                <input type="text" id="usernameInput" placeholder="Masukkan namamu..." autocomplete="off">
+                <button id="btn-to-prologue">MASUK</button>
             </div>
 
-            <footer class="mini-credits">
-                <p>by <strong>Frdshdy</strong> | <i class="fab fa-instagram"></i> frdshdy_15</p>
-            </footer>
-        </div>
-    </section>
-
-    <section id="prologue" class="screen">
-        <div class="layer-content centered">
-            <div class="story-box">
-                <h2 class="story-title">Mengenal Sang Diva</h2>
-                <div class="story-image-wrapper">
-                    <img src="5.jpeg" id="prologueImg" class="story-img">
-                </div>
-                <div id="storyText" class="story-text">
-                    "Aku adalah Furina de Fontaine... 
-                    Bintang yang menerangi panggung sandiwara ini. 
-                    Ketahuilah, aku benci kebosanan dan ketidaksopanan!"
-                </div>
-                <button id="nextStoryBtn" class="btn-next">Lanjutkan <i class="fas fa-chevron-right"></i></button>
+            <div class="dev-info">
+                <p>Dev: Frdshdy | <i class="fab fa-instagram"></i> frdshdy_15</p>
             </div>
         </div>
-    </section>
+    </div>
 
-    <section id="app" class="screen">
-        <nav class="top-nav">
-            <div class="nav-profile">
-                <div class="mini-avatar-box">
-                    <img src="5.jpeg" id="miniAvatar" class="mini-avatar">
-                    <span id="statusDot"></span>
-                </div>
-                <div class="nav-info">
-                    <b id="moodLabel">Theatrical</b>
-                    <small id="realtimeClock">00:00</small>
-                </div>
-            </div>
-            <div class="trust-meter">
-                <small>TRUST</small>
-                <span id="trustVal">20</span>
-            </div>
-        </nav>
-
-        <div id="chat" class="chat-viewport"></div>
-
-        <div class="input-bar">
-            <input type="text" id="userInput" placeholder="Ketik pesan..." autocomplete="off">
-            <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </section>
-
-    <section id="ending" class="screen">
-        <div class="layer-content centered">
-            <div class="ending-card">
-                <div class="final-icon">✨</div>
-                <h2>CURTAIN FALL</h2>
-                <div class="flag-wrapper">
-                    <p>SPECIAL REWARD:</p>
-                    <code id="flagValue">DECRYPTING...</code>
-                </div>
-                <button onclick="location.reload()" class="btn-restart">Ulangi Pertunjukan</button>
+    <div id="screen-prologue" class="screen">
+        <div class="content-wrap">
+            <div class="story-card">
+                <img src="5.jpeg" id="img-prologue" class="img-story">
+                <div id="text-prologue" class="text-story">
+                    </div>
+                <button id="btn-to-chat">LANJUTKAN</button>
             </div>
         </div>
-    </section>
+    </div>
+
+    <div id="screen-chat" class="screen">
+        <div class="header-chat">
+            <div class="info-user">
+                <img src="5.jpeg" id="mini-avatar" class="img-mini">
+                <div>
+                    <div id="mood-label">Theatrical</div>
+                    <small id="clock">00:00</small>
+                </div>
+            </div>
+            <div class="trust-pill">
+                Trust: <span id="trust-val">20</span>
+            </div>
+        </div>
+
+        <div id="chat-box" class="chat-area">
+            </div>
+
+        <div class="input-area">
+            <input type="text" id="chatInput" placeholder="Ketik pesan..." autocomplete="off">
+            <button id="btn-send"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <div id="screen-ending" class="screen">
+        <div class="content-wrap">
+            <div class="end-card">
+                <h2>PANGGUNG USAI</h2>
+                <div class="flag-box">
+                    <p>YOUR REWARD:</p>
+                    <code id="flag-text">DECRYPTING...</code>
+                </div>
+                <button onclick="location.reload()">MAIN LAGI</button>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
