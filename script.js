@@ -22,6 +22,52 @@ const ASSETS = {
 };
 
 /* ===============================
+   YAPPING ENGINE (FURINA CEREWET MODE)
+   ================================ */
+const yapEnhancer = (userText, botReply) => {
+    // 1. MIRRORING LOGIC (Mengulang kata user)
+    // Ambil kata terpanjang dari input user untuk diulang (supaya terlihat nyambung)
+    const words = userText.split(" ").filter(w => w.length > 3); 
+    const targetWord = words.length > 0 ? words[Math.floor(Math.random() * words.length)] : null;
+    
+    let prefix = "";
+    if (targetWord && Math.random() > 0.3) { // 70% peluang dia mengulang kata
+        const reactions = [
+            `"${targetWord}" katamu? Hmph, menarik... `,
+            `Wow, "${targetWord}"? Kedengarannya cukup... unik. `,
+            `Tunggu, kau membahas "${targetWord}"? `,
+            `Ah, "${targetWord}"... topik yang sangat spesifik ya. `,
+            `Kenapa tiba-tiba bicara soal "${targetWord}"? `
+        ];
+        prefix = reactions[Math.floor(Math.random() * reactions.length)];
+    }
+
+    // 2. YAPPING LOGIC (Ocehan tambahan di akhir)
+    // Furina tidak bisa berhenti bicara, jadi kita tambahkan kalimat random di belakang.
+    const rants = [
+        " Ngomong-ngomong, kau tahu tidak? Menjadi bintang utama itu melelahkan, aku harus mengatur pencahayaan, memastikan gaunku berkilau, dan meladeni figuran sepertimu!",
+        " Tapi ya sudahlah, selama kau masih memberikan tepuk tangan, aku akan memaafkan selera humormu yang kadang-kadang aneh itu.",
+        " Sebenarnya aku ingin minum teh sekarang, tapi meladeni percakapan ini sepertinya lebih mendesak demi menjaga rating popularitasku.",
+        " Hmph! Jangan lupa catat kalimatku barusan, itu bisa jadi kutipan legendaris di koran Steambird besok pagi!",
+        " Kadang aku berpikir, apakah Neuvillette pernah merasakan keseruan mengobrol seperti ini? Ah, dia terlalu kaku, tidak sepertiku yang pandai bergaul!",
+        " Ingat ya, di Fontaine, keadilan itu penting, tapi gaya dan estetika jauh lebih penting! Pastikan kau mencatat itu di otakmu.",
+        " Awas saja kalau kau bosan mendengarku! Aku punya ribuan naskah drama yang bisa kubacakan sampai telingamu panas!"
+    ];
+
+    // Jika reply aslinya pendek, paksa dia nge-yap (ngoceh)
+    let suffix = "";
+    if (botReply.length < 100 || Math.random() > 0.2) { // 80% peluang nambah ocehan
+        suffix = rants[Math.floor(Math.random() * rants.length)];
+    }
+
+    // Gabungkan: [Ulang Kata User] + [Jawaban Asli Dataset] + [Ocehan Tambahan]
+    // Bersihkan tanda baca ganda kalau ada
+    let finalResult = prefix + botReply + suffix;
+    
+    return finalResult;
+};
+
+/* ===============================
    ALGORITMA PUITIS (FURINA STYLE)
    ================================ */
 const poeticEnhancer = (text) => {
@@ -70,7 +116,7 @@ function resetInactivityTimer() {
         // Furina benci diabaikan, trust turun sedikit
         STATE.trust -= 1; 
         updateUI();
-    }, 10000); // 10 Detik
+    }, 30000); // 30 Detik
 }
 
 /* ===============================
@@ -2290,54 +2336,67 @@ const MEMORY = [];
 
 function analyze(raw) {
     const text = raw.toLowerCase().trim();
-
-    // Deteksi spam/pengulangan
     if (text === STATE.lastInput) {
         STATE.repeat++;
     } else {
         STATE.repeat = 0;
     }
     STATE.lastInput = text;
-
-    // Tambahkan ke MEMORY
     MEMORY.push(text); 
-    if (MEMORY.length > 20) MEMORY.shift(); // Biar gak keberatan ram-nya
-
-    return text;
+    if (MEMORY.length > 20) MEMORY.shift(); 
+    return text; // Return text yang sudah lowercase
 }
 
-function decide(analysis) {
+function decide(analysis, rawOriginalText) { // Terima rawOriginalText untuk mirroring
     // 1. Proteksi Spam
     if (STATE.repeat >= 3) {
-        STATE.trust -= 10;
+        STATE.trust -= 20; // HARD MODE: Hukuman lebih berat
         STATE.mood = "angry";
-        return "Berhenti mengulang adegan yang sama! Kau merusak tempo pertunjukan ini!";
+        return "Berhenti mengulang adegan yang sama! Kau merusak tempo pertunjukan ini! Apa kau kaset rusak?!";
     }
 
-    // --- UBAHAN: PINDAHKAN PENGECEKAN DATASET KE ATAS ---
-    
-    // 2. Cek DATASET DULU (Prioritas Utama)
+    let selectedReply = null;
+    let baseTrustChange = 0;
+
+    // 2. Cek DATASET (Prioritas Utama)
     for (const d of DATASET) {
         if (d.match && d.match.test(analysis)) {
-            if (d.trust) STATE.trust += d.trust;
+            if (d.trust) baseTrustChange = d.trust;
             if (d.mood) STATE.mood = d.mood;
             if (d.effect) d.effect();
 
-            const randomReply = d.reply[Math.floor(Math.random() * d.reply.length)];
-            return poeticEnhancer(randomReply);
+            selectedReply = d.reply[Math.floor(Math.random() * d.reply.length)];
+            break;
         }
     }
 
-    // 3. Baru Cek Logic BRAIN (Jika tidak ada di dataset)
-    const brainResult = BRAIN.process(analysis);
-
-    if (brainResult) {
-        STATE.mood = brainResult.mood;
-        return poeticEnhancer(brainResult.reply);
+    // 3. Logic BRAIN (Jika tidak ada di dataset)
+    if (!selectedReply) {
+        const brainResult = BRAIN.process(analysis);
+        if (brainResult) {
+            STATE.mood = brainResult.mood;
+            baseTrustChange = brainResult.trust;
+            selectedReply = brainResult.reply;
+        }
     }
 
-    // 4. Fallback jika semua buntu
-    return poeticEnhancer(FALLBACK[Math.floor(Math.random() * FALLBACK.length)]);
+    // 4. Fallback
+    if (!selectedReply) {
+        selectedReply = FALLBACK[Math.floor(Math.random() * FALLBACK.length)];
+        baseTrustChange = -1; // HARD MODE: Kalau AI bingung, trust turun dikit
+    }
+
+    // --- HARD MODE CALCULATION ---
+    // Persulit game: Trust positif dibagi 2, Trust negatif dikali 1.5
+    if (baseTrustChange > 0) {
+        STATE.trust += Math.floor(baseTrustChange / 2); // Naik pangkat susah
+    } else {
+        STATE.trust += Math.floor(baseTrustChange * 1.5); // Turun pangkat gampang
+    }
+
+    // --- APPLY YAPPING & MIRRORING ---
+    // Kita kirim teks asli user (belum lowercase) untuk diambil katanya
+    return yapEnhancer(rawOriginalText, selectedReply);
 }
 
 /* ===============================
@@ -2418,14 +2477,16 @@ function sendMessage() {
     if (STATE.ending) return;
 
     const input = document.getElementById("userInput");
-    const msg = input.value.trim();
+    const msg = input.value.trim(); // Ini teks asli (Case sensitive)
     if (!msg) return;
 
     addMessage(msg, "user");
     input.value = "";
 
-    const analysis = analyze(msg);
-    const reply = decide(analysis);
+    const analysis = analyze(msg); // Ini teks lowercase
+    
+    // UBAH BARIS INI: Kirim 'analysis' dan 'msg' (asli)
+    const reply = decide(analysis, msg); 
 
     setTimeout(() => {
         addMessage(reply, "ai");
@@ -2433,7 +2494,6 @@ function sendMessage() {
         checkEnding();
     }, 800 + Math.random() * 1000);
 }
-
 
 /* ===============================
    INITIALIZATION & EVENTS
