@@ -334,3 +334,67 @@ body.mood-angry .main-header {
     box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
 }
 
+/* ===================================================
+   ADDITIONAL DRAMA & DYNAMIC UI (TEMPELS DI BAWAH)
+   =================================================== */
+
+/* Styling untuk Teks Mood & Pangkat di Header */
+#mood-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 2px;
+    color: var(--primary-blue);
+    transition: all 0.3s ease;
+}
+
+/* Penyesuaian Header & Mood Label saat Marah */
+body.mood-angry #mood-label {
+    color: #ff8080;
+    text-shadow: 0 0 5px red;
+}
+
+/* Perbaikan Animasi Chat Pusing (Targeting the Paragraph) */
+.dizzy-chat p {
+    animation: dizzy 0.3s infinite ease-in-out;
+    filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.6));
+    border: 2px solid #ff0000 !important;
+    background: #2b0000 !important; /* Warna bubble jadi gelap pekat */
+    color: #ffffff !important;
+}
+
+/* Efek Getar Layar yang Lebih Halus */
+.shake-effect {
+    animation: shake 0.15s infinite;
+}
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px); }
+    25% { transform: translate(-1px, -1px); }
+    50% { transform: translate(-1px, 1px); }
+    75% { transform: translate(1px, -1px); }
+    100% { transform: translate(1px, 1px); }
+}
+
+/* Animasi Glitch Teks AI saat Marah */
+body.mood-angry .msg.ai p {
+    font-family: 'Courier New', monospace;
+    letter-spacing: -0.2px;
+}
+
+/* Overlay Merah Tipis di Sekitar Layar saat Marah */
+body.mood-angry::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, transparent 50%, rgba(255, 0, 0, 0.2) 100%);
+    pointer-events: none;
+    z-index: 999;
+}
+
+/* Transisi Halus untuk Tombol Kirim */
+#sendBtn {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s;
+}
