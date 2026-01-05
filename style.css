@@ -292,3 +292,45 @@ body.mood-angry .trust-pill { background: var(--danger-red); box-shadow: 0 0 15p
 }
 
 .flag-box code { color: #0369a1; font-weight: bold; font-size: 12px; }
+
+/* Efek Gelap Total saat Marah Besar */
+body.mood-angry {
+    background: radial-gradient(circle, #200000 0%, #050000 100%) !important;
+    filter: saturate(1.5) contrast(1.2);
+}
+
+/* Animasi Getar Layar (Screen Shake) */
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    50% { transform: translate(-1px, 2px) rotate(1deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.shake-effect {
+    animation: shake 0.5s infinite;
+}
+
+/* Animasi Chat Muter-Muter/Goyang Acak */
+@keyframes dizzy {
+    0% { transform: rotate(0deg) translateX(0); }
+    25% { transform: rotate(2deg) translateX(5px); }
+    50% { transform: rotate(-2deg) translateX(-5px); }
+    75% { transform: rotate(1deg) translateX(3px); }
+    100% { transform: rotate(0deg) translateX(0); }
+}
+
+/* Class ini akan dipasang ke bubble chat AI kalau dia marah */
+.dizzy-chat {
+    animation: dizzy 0.3s infinite ease-in-out;
+    filter: drop-shadow(0 0 10px red);
+    border: 2px solid red !important;
+}
+
+/* Efek Merah Berdenyut pada Header */
+body.mood-angry .main-header {
+    background: rgba(139, 0, 0, 0.8) !important;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+}
+
