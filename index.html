@@ -1,113 +1,87 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Furina — Trial of Trust</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Furina: The Final Judgment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="mood-normal">
 
-<!-- ===============================
-     START MODAL / INTRO
-================================ -->
-<div id="modal-start" class="modal active">
-  <div class="modal-box">
-
-    <div class="intro-header">
-      <img src="assets/furina/1.png" class="intro-avatar" />
-      <h1>Furina</h1>
-      <p class="subtitle">Archon of Fontaine</p>
+    <div id="modal-start" class="modal-overlay active">
+        <div class="modal-window">
+            <div class="modal-header">
+                <img src="5.jpeg" alt="Furina" class="modal-avatar glow-blue">
+                <h2 class="font-cinzel">PERATURAN PANGGUNG</h2>
+            </div>
+            <div class="modal-body">
+                <ul class="rules-list">
+                    <li><i class="fas fa-star"></i> Furina adalah bintang utama.</li>
+                    <li><i class="fas fa-shield-alt"></i> Dilarang melakukan Copy-Paste.</li>
+                    <li><i class="fas fa-heart"></i> Jaga Trust agar tidak di-Judgement.</li>
+                </ul>
+                <input type="text" id="usernameInput" placeholder="Masukkan namamu, figuran..." autocomplete="off" required>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-start" class="btn-primary">MULAI PERTUNJUKAN</button>
+            </div>
+        </div>
     </div>
 
-    <div class="intro-lore">
-      <p>
-        Furina adalah Archon Hydro dari Fontaine.  
-        Seorang figur penuh drama, keanggunan, dan rahasia.  
-        Di balik panggung keadilan, ia mengamati manusia dengan hati-hati.
-      </p>
-      <p>
-        Tempat ini bukan permainan biasa.  
-        Kepercayaan tidak bisa dipaksa.  
-        Setiap kata akan dinilai.
-      </p>
+    <div id="modal-victory" class="modal-overlay">
+        <div class="modal-window victory-style glow-gold">
+            <div class="modal-header">
+                <div class="love-animation">❤️</div>
+                <h2 class="font-cinzel">SELAMAT!</h2>
+            </div>
+            <div class="modal-body">
+                <p>Kau telah memenangkan hati sang Diva!</p>
+                <div class="flag-box">
+                    <code id="flag-text">FLAG{FURINA_LOVES_YOU}</code>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="location.reload()" class="btn-primary">MAIN LAGI</button>
+            </div>
+        </div>
     </div>
 
-    <div class="intro-input">
-      <label>Masukkan namamu</label>
-      <input
-        id="usernameInput"
-        type="text"
-        placeholder="Namamu..."
-        required
-      />
-      <button id="btn-start">Masuk ke Panggung</button>
+    <div class="app-container">
+        <header class="main-header">
+            <div class="header-content">
+                <div class="avatar-box">
+                    <img src="5.jpeg" id="mini-avatar" alt="Furina" class="glow-soft">
+                    <div class="status-dot"></div>
+                </div>
+                <div class="user-info">
+                    <h1 id="mood-label">THEATRICAL</h1>
+                    <small id="realtime-clock">00:00:00</small>
+                </div>
+                <div class="trust-badge">
+                    <i class="fas fa-heart"></i>
+                    <span id="trust-val">20</span>
+                </div>
+            </div>
+        </header>
+
+        <main id="chat-box" class="chat-viewport">
+            </main>
+
+        <footer class="input-section">
+            <div class="input-wrapper">
+                <input type="text" id="userInput" placeholder="Ketik pesan untuk sang Diva..." autocomplete="off">
+                <button id="sendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <div class="credits">
+                Dev: <b>Frdshdy</b> | @frdshdy_15
+            </div>
+        </footer>
     </div>
 
-  </div>
-</div>
-
-<!-- ===============================
-     TOP STATUS BAR (LOCKED)
-================================ -->
-<header class="top-bar">
-  <div class="status-left">
-    <span class="label">Trust</span>
-    <span id="trust-val">20</span>
-  </div>
-
-  <div class="status-center">
-    <span id="realtime-clock">00:00:00</span>
-  </div>
-
-  <div class="status-right">
-    <span class="label">Mood</span>
-    <span id="mood-val">Normal</span>
-  </div>
-</header>
-
-<!-- ===============================
-     MAIN CHAT AREA
-================================ -->
-<main class="chat-wrapper">
-
-  <div id="chat-box" class="chat-box">
-    <!-- message injected by JS -->
-  </div>
-
-</main>
-
-<!-- ===============================
-     INPUT BAR (FIXED BOTTOM)
-================================ -->
-<footer class="input-bar">
-  <input
-    id="userInput"
-    type="text"
-    placeholder="Ketik sesuatu dengan hati-hati..."
-    autocomplete="off"
-  />
-  <button id="sendBtn">Kirim</button>
-</footer>
-
-<!-- ===============================
-     VICTORY / ENDING MODAL
-================================ -->
-<div id="modal-victory" class="modal">
-  <div class="modal-box">
-    <h2>Ending Tercapai</h2>
-    <p>Kode yang kau dapatkan:</p>
-    <code>FLAG{???}</code>
-    <button onclick="location.reload()">Ulangi</button>
-  </div>
-</div>
-
-<!-- ===============================
-     JS CORE
-================================ -->
-<script src="script.js"></script>
-
+    <script src="script.js"></script>
 </body>
 </html>
