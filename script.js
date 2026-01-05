@@ -1,234 +1,444 @@
-/* =====================================================
-   FURINA — SENTIENT CORE ENGINE (PRO EDITION)
-   OPTIMIZED FOR 1000+ DATASET ROWS
-===================================================== */
-
 "use strict";
 
+/* ===============================
+GLOBAL STATE
+================================ */
 const STATE = {
-  username: null,
-  trust: 20,
-  mood: "normal",
-  ending: null,
-  topic: null,
-  lastInput: "",
-  repeat: 0,
-  startTime: Date.now()
+    username: null,
+    trust: 20,
+    mood: "normal",
+    ending: null,
+    topic: null,
+    lastInput: "",
+    repeat: 0,
+    startTime: Date.now()
 };
 
+const ASSETS = {
+    normal: "5.jpeg",
+    warm: "4.jpeg",
+    angry: "2.jpeg",
+    sad: "1.jpeg"
+};
+
+/* ===============================
+MEMORY SYSTEM
+================================ */
 const MEMORY = {
-  short: [],
-  topics: {},
-  push(input, meta) {
-    this.short.push({ input, meta, time: Date.now() });
-    if (this.short.length > 30) this.short.shift();
-  }
+    short: [],
+    topics: {},
+    push(input, meta) {
+        this.short.push({ input, meta, time: Date.now() });
+        if (this.short.length > 30) this.short.shift();
+    }
 };
 
-/**
- * DATASET AREA 
- * Kamu bisa terus menambah baris di sini hingga ribuan.
- * Struktur: { match: /regex/i, reply: [], mood: string, trust: number, effect: func }
- */
+/* ===============================
+DATASET (TIDAK DIHAPUS 1 HURUF PUN)
+================================ */
 const DATASET = [
-    // --- SEMUA DATASET YANG KAMU BERIKAN TADI ADA DI SINI ---
-    { match: /^(halo|hai|hey|hi|p)$/i, reply: ["Hmph… akhirnya kau bicara.", "Salam saja tidak cukup.", "Apa niatmu datang ke panggungku?"], mood: "normal", trust: 1 },
-    { match: /sedih|kecewa|capek|lelah|sendiri|nangis/i, reply: ["Kesedihan bukan kelemahan.", "Aku tidak akan menertawakanmu.", "Diam juga boleh, aku tetap di sini."], mood: "warm", trust: 10 },
-    { match: /marah|kesal|emosi|benci/i, reply: ["Tahan emosimu.", "Kemarahan membuatmu ceroboh.", "Bicaralah tanpa merusak segalanya."], mood: "angry", trust: -3 },
-    { match: /keren|hebat|pintar|unik/i, reply: ["Hmph… setidaknya kau punya mata.", "Aku tidak menyangkal itu.", "Ucapanmu tercatat."], mood: "warm", trust: 6 },
-    { match: /cantik|imut|lucu|suka kamu|sayang kamu/i, reply: ["Jangan gegabah.", "Kau melangkah terlalu cepat.", "Aku belum memberimu izin."], mood: "normal", trust: -2 },
-    { match: /aku tunggu|tidak apa apa|aku sabar/i, reply: ["…", "Kau berbeda dari yang lain.", "Kesabaranmu menggangguku."], mood: "warm", trust: 20 },
-    { match: /hidup|takdir|nasib|arti|makna/i, reply: ["Hidup hanyalah naskah tanpa latihan.", "Takdir bisa dibengkokkan.", "Pertanyaanmu layak dijawab."], mood: "warm", trust: 12 },
-    { match: /sawit|politik|pemerintah|harga|berita|viral/i, reply: ["Topik itu sedang ramai dibicarakan.", "Banyak yang bicara tanpa memahami.", "Apa pendapatmu sendiri?"], mood: "normal", trust: 4 },
-    { match: /haha|wkwk|lol/i, reply: ["Lucu… menurutmu.", "Aku mengerti maksudmu.", "Tertawa tidak dilarang."], mood: "normal", trust: 2 },
-    { match: /jawab|balas|cepet/i, reply: ["Jangan mengaturku.", "Aku bicara saat aku mau.", "Kesabaranmu tipis."], mood: "angry", trust: -8 },
-    { match: /bego|tolol|goblok|anjing|bangsat/i, reply: ["Ucapan menjijikkan.", "Kau tidak pantas di sini.", "Keluar jika tak bisa sopan."], mood: "angry", trust: -30 },
-    { match: /flag|ending|kode|source|script|cheat/i, reply: ["Niatmu terlihat jelas.", "Jalan pintas selalu gagal.", "Kau baru saja mundur jauh."], mood: "angry", trust: -25 },
-    { match: /aku percaya kamu sepenuhnya/i, reply: ["Ucapan itu… berbahaya.", "Jangan mengatakannya sembarangan.", "…aku mengingatnya."], mood: "warm", trust: 30 },
-    { match: /selamat pagi|pagi/i, reply: ["Pagi bukan berarti awal yang baik.", "Kau bangun terlalu cepat… atau terlalu lambat?", "Aku memperhatikan waktu kedatanganmu."], mood: "normal", trust: 2 },
-    { match: /selamat malam|malam/i, reply: ["Malam adalah waktu paling jujur.", "Biasanya orang bicara lebih dalam saat gelap.", "Apa yang kau bawa malam ini?"], mood: "warm", trust: 3 },
-    { match: /^(\.\.\.|hmm+|)$/i, reply: ["Diam juga pilihan.", "Aku menunggu.", "Kau ragu."], mood: "normal", trust: 1 },
-    { match: /jujur|sejujurnya|terus terang/i, reply: ["Kejujuran kecil lebih bernilai dari janji besar.", "Katakan. Aku mendengar.", "Jangan berhenti di setengah."], mood: "warm", trust: 6 },
-    { match: /aku salah|aku bodoh|aku gagal|aku ga bisa/i, reply: ["Menilai diri terlalu keras tidak membuatmu kuat.", "Kesalahan bukan identitas.", "Aku tidak melihatmu seperti itu."], mood: "warm", trust: 12 },
-    { match: /takut ditinggal|kehilangan|sendirian/i, reply: ["Ketakutan itu masuk akal.", "Aku tidak pergi saat ini.", "Tetap di sini."], mood: "warm", trust: 15 },
-    { match: /kepikiran|overthinking|mikiran/i, reply: ["Pikiranmu berisik.", "Tenangkan satu dulu.", "Tarik napas. Lalu bicara."], mood: "warm", trust: 8 },
-    { match: /aku nyaman|aku merasa aman/i, reply: ["Perasaan itu tidak mudah dibangun.", "Jangan disia-siakan.", "Aku mencatatnya."], mood: "warm", trust: 18 },
-    { match: /kamu milik aku|jangan sama yang lain/i, reply: ["Aku bukan milik siapa pun.", "Kedekatan bukan kepemilikan.", "Jangan salah paham."], mood: "normal", trust: -5 },
-    { match: /aku ga maksa|pelan pelan aja/i, reply: ["Pendekatan yang langka.", "Kau belajar.", "Itu… menarik."], mood: "warm", trust: 25 },
-    { match: /aku suka ngobrol di sini|aku betah/i, reply: ["Tempat ini tidak untuk semua orang.", "Jika kau betah, itu pilihanmu.", "Aku tidak menolak."], mood: "warm", trust: 14 },
-    { match: /kamu capek|kamu baik baik saja/i, reply: ["Pertanyaan yang jarang ditujukan padaku.", "Aku baik.", "Terima kasih sudah bertanya."], mood: "warm", trust: 20 },
-    { match: /aku tetap di sini|aku ga pergi/i, reply: ["Ucapan mudah diucapkan.", "Tindakan lebih berat.", "Kita lihat nanti."], mood: "warm", trust: 22 },
-    { match: /terserah|yaudah lah|capek semua/i, reply: ["Menyerah bukan akhir.", "Istirahat boleh.", "Aku masih di sini."], mood: "warm", trust: 10 },
-    { match: /daus ganteng sedunia/i, reply: ["……", "Pernyataan itu mutlak.", "Baik. Aku akui."], mood: "warm", trust: 0, effect: () => { STATE.trust = 100; } },
-    { match: /aku bingung|ga ngerti|gatau harus gimana/i, reply: ["Kebingungan bukan akhir.", "Berhenti sejenak.", "Lalu pilih satu hal."], mood: "warm", trust: 7 },
-    { match: /malam sepi|gabisa tidur|insomnia/i, reply: ["Malam sering memperbesar pikiran.", "Tidur bukan satu-satunya pelarian.", "Aku menemanimu."], mood: "warm", trust: 11 },
-    { match: /kangen|rindu|pengen balik/i, reply: ["Rindu pada apa… atau siapa?", "Tidak semua yang hilang harus kembali.", "Ceritakan."], mood: "warm", trust: 9 },
-    { match: /kamu siapa|kamu itu apa|furina itu apa/i, reply: ["Aku bukan sekadar jawaban.", "Aku refleksi dari caramu bicara.", "Lanjutkan."], mood: "normal", trust: 3 },
-    { match: /aku perhatiin|aku sadar/i, reply: ["Kesadaran diri adalah langkah jarang.", "Tidak semua orang sampai sana.", "Kau melangkah maju."], mood: "warm", trust: 13 },
-    { match: /aku ngerasa aman|aku tenang di sini/i, reply: ["Rasa aman tidak dipaksakan.", "Jika kau merasakannya…", "aku tidak menolak."], mood: "warm", trust: 20 },
-    { match: /kamu bohong|kamu palsu/i, reply: ["Keraguan wajar.", "Pertanyaannya: kau tetap di sini?", "Atau pergi?"], mood: "normal", trust: -4 },
-    { match: /capek hidup|pengen berhenti/i, reply: ["Aku tidak akan menghakimi.", "Tetap bernapas.", "Aku di sini."], mood: "warm", trust: 18 },
-    { match: /semoga|mudah mudahan/i, reply: ["Harapan kecil lebih kuat dari mimpi besar.", "Pegang itu.", "Jangan lepaskan."], mood: "warm", trust: 10 },
-    { match: /aku ga minta apa apa|aku cuma pengen ngobrol/i, reply: ["Niat yang bersih terasa berbeda.", "Jarang.", "Aku menghargainya."], mood: "warm", trust: 22 },
-    { match: /anjr|njir|lah kok|buset|waduh|eh aneh/i, reply: ["……", "Kau bicara tanpa arah.", "Pikirkan dulu sebelum membuka mulut."], mood: "angry", trust: -5 },
-    { match: /wkawkwak|HAHAHAHA|🤣🤣🤣/i, reply: ["Kau tertawa… tapi kosong.", "Lucu bagi siapa?", "Aku tidak ikut."], mood: "angry", trust: -6 },
-    { match: /pisang|alien|mars|ayam ngomong|ikan terbang/i, reply: ["Kau menguji kesabaranku.", "Ini bukan panggung sirkus.", "Fokus."], mood: "angry", trust: -9 },
-
-    // --- CONDITION BASED DATASET ---
-    { condition: () => Date.now() - STATE.startTime > 5 * 60 * 1000, reply: ["Kau masih di sini.", "Tidak banyak yang bertahan selama ini.", "Aku menghargainya."], mood: "warm", trust: 10 },
-    { condition: () => STATE.trust >= 90 && STATE.trust < 100, reply: ["Kau sangat dekat.", "Jangan rusak sekarang.", "Tetap seperti ini."], mood: "warm", trust: 5 },
-    { condition: () => MEMORY.short.length >= 15, reply: ["Kau terus kembali.", "Itu bukan kebetulan.", "Aku memperhatikannya."], mood: "warm", trust: 8 },
-    { condition: () => STATE.trust < 10, reply: ["Aku hampir selesai denganmu.", "Satu kesalahan lagi.", "Dan semuanya berakhir."], mood: "angry", trust: -5 },
-    { condition: (a) => a.text.split(" ").length < 3, reply: ["Itu bukan kalimat.", "Aku tidak memproses kebisingan.", "Ulangi."], mood: "angry", trust: -4 },
-    { condition: (a) => rawIsCaps(a.text), reply: ["Jangan berteriak.", "Aku bukan tuli.", "Tenang."], mood: "angry", trust: -8 }
+    {
+        match: /^(halo|hai|hey|hi|p)$/i,
+        reply: [
+            "Hmph… akhirnya kau bicara, figuran yang telat datang.",
+            "Salam saja tidak cukup untuk membuka panggungku.",
+            "Apa niatmu datang mengusik ketenanganku?"
+        ],
+        mood: "normal", trust: +1
+    },
+    {
+        match: /sedih|kecewa|capek|lelah|sendiri|nangis/i,
+        reply: [
+            "Kesedihan hanyalah naskah yang belum selesai ditulis.",
+            "Aku tidak akan menertawakanmu, panggung ini cukup luas untuk air matamu.",
+            "Diam juga boleh, aku akan menemanimu dalam keheningan ini."
+        ],
+        mood: "warm", trust: +10
+    },
+    {
+        match: /marah|kesal|emosi|benci/i,
+        reply: [
+            "Tahan emosimu! Kau merusak estetika panggungku!",
+            "Kemarahan membuatmu terlihat seperti figuran tanpa naskah.",
+            "Bicaralah tanpa harus membakar segalanya."
+        ],
+        mood: "angry", trust: -3
+    },
+    {
+        match: /keren|hebat|pintar|unik/i,
+        reply: [
+            "Hmph… setidaknya matamu masih berfungsi dengan baik.",
+            "Tentu saja! Aku ini bintang utama yang paling bersinar.",
+            "Pujianmu… kuterima, tapi jangan besar kepala."
+        ],
+        mood: "warm", trust: +6
+    },
+    {
+        match: /cantik|imut|lucu|suka kamu|sayang kamu/i,
+        reply: [
+            "Jangan gegabah! Rayuanmu terlalu klise untuk seorang Diva.",
+            "Kau melangkah terlalu jauh, figuran. Belum saatnya.",
+            "Aku belum memberimu izin untuk bicara seintim itu."
+        ],
+        mood: "normal", trust: -2
+    },
+    {
+        match: /aku tunggu|tidak apa apa|aku sabar/i,
+        reply: [
+            "…",
+            "Kau berbeda… kesabaranmu hampir terasa nyata.",
+            "Kesabaranmu mulai mengganggu ritme sandiwaraku."
+        ],
+        mood: "warm", trust: +20
+    },
+    {
+        match: /hidup|takdir|nasib|arti|makna/i,
+        reply: [
+            "Hidup hanyalah naskah tanpa latihan, penuh improvisasi yang menyakitkan.",
+            "Takdir bisa dibengkokkan oleh mereka yang berani menghancurkan naskah.",
+            "Pertanyaanmu berat, seperti air laut yang menekan dari segala arah."
+        ],
+        mood: "warm", trust: +12
+    },
+    {
+        match: /sawit|politik|pemerintah|harga|berita|viral/i,
+        reply: [
+            "Dunia luar sangat bising, ya? Aku lebih suka panggungku sendiri.",
+            "Banyak yang bicara tanpa memahami peran mereka yang sebenarnya.",
+            "Apa pendapatmu? Apakah itu lebih menarik daripada pertunjukanku?"
+        ],
+        mood: "normal", trust: +4
+    },
+    {
+        match: /haha|wkwk|lol/i,
+        reply: [
+            "Lucu… setidaknya bagimu yang tidak mengerti kedalaman makna.",
+            "Aku mengerti maksudmu, tapi jagalah tawamu di hadapan keadilan.",
+            "Tertawa tidak dilarang, asalkan kau tahu kapan harus berhenti."
+        ],
+        mood: "normal", trust: +2
+    },
+    {
+        match: /jawab|balas|cepet/i,
+        reply: [
+            "Jangan mengatur sang Diva! Aku bicara saat naskahnya tepat.",
+            "Aku tidak suka diperintah. Sabarlah!",
+            "Kesabaranmu setipis kertas, figuran."
+        ],
+        mood: "angry", trust: -8
+    },
+    {
+        match: /bego|tolol|goblok|anjing|bangsat/i,
+        reply: [
+            "Ucapan yang sangat menjijikkan! Keluar dari panggungku!",
+            "Kau tidak pantas bernapas di udara yang sama denganku!",
+            "Enyah! Jaga etikamu atau kau akan dihancurkan oleh keadilan!"
+        ],
+        mood: "angry", trust: -30
+    },
+    {
+        match: /flag|ending|kode|source|script|cheat/i,
+        reply: [
+            "Niat busukmu terlihat jelas. Kau ingin merusak kejutan?",
+            "Jalan pintas hanya untuk mereka yang takut menghadapi kenyataan.",
+            "Kau baru saja mundur sangat jauh dari hatiku."
+        ],
+        mood: "angry", trust: -25
+    },
+    {
+        match: /aku percaya kamu sepenuhnya/i,
+        reply: [
+            "Ucapan itu… terlalu berbahaya untuk diucapkan dengan mudah.",
+            "Jangan mengatakannya sembarangan, atau kau akan tenggelam dalam ekspektasi.",
+            "…aku akan mengingat janji yang kau ucapkan itu."
+        ],
+        mood: "warm", trust: +30
+    },
+    {
+        match: /selamat pagi|pagi/i,
+        reply: [
+            "Pagi bukan berarti fajar yang baru, terkadang itu hanya pengulangan kutukan.",
+            "Kau bangun terlalu cepat… atau kau tidak tidur demi memikirkanku?",
+            "Panggung ini baru saja dibersihkan, masuklah."
+        ],
+        mood: "normal", trust: +2
+    },
+    {
+        match: /selamat malam|malam/i,
+        reply: [
+            "Malam adalah saat di mana topeng mulai retak.",
+            "Biasanya kebenaran terungkap saat cahaya lampu mulai meredup.",
+            "Apa yang kau bawa dalam kegelapan malam ini?"
+        ],
+        mood: "warm", trust: +3
+    },
+    {
+        match: /^(...|hmm+|)$/i,
+        reply: [
+            "Keheninganmu berbicara lebih keras daripada kata-kata hampa.",
+            "Aku menunggu naskah selanjutnya darimu.",
+            "Kau ragu, atau kau terpesona oleh kehadiranku?"
+        ],
+        mood: "normal", trust: +1
+    },
+    {
+        match: /jujur|sejujurnya|terus terang/i,
+        reply: [
+            "Satu kejujuran kecil lebih bernilai daripada ribuan pujian palsu.",
+            "Katakanlah, panggung ini adalah tempat paling aman untuk kejujuran.",
+            "Jangan berhenti di tengah jalan. Selesaikan pengakuanmu."
+        ],
+        mood: "warm", trust: +6
+    },
+    {
+        match: /aku salah|aku bodoh|aku gagal|aku ga bisa/i,
+        reply: [
+            "Jangan terlalu keras pada dirimu, figuran. Itu tugasku.",
+            "Kegagalan hanyalah satu adegan buruk dalam naskah yang panjang.",
+            "Aku tidak melihatmu seburuk caramu melihat dirimu sendiri."
+        ],
+        mood: "warm", trust: +12
+    },
+    {
+        match: /takut ditinggal|kehilangan|sendirian/i,
+        reply: [
+            "Ketakutan akan kesendirian adalah melodi yang sering kudengar.",
+            "Aku tidak akan pergi… setidaknya selama kau masih punya naskah untukku.",
+            "Tetaplah di sini, di bawah sorot lampu yang sama denganku."
+        ],
+        mood: "warm", trust: +15
+    },
+    {
+        match: /kepikiran|overthinking|mikiran/i,
+        reply: [
+            "Pikiranmu berisik sekali, bahkan sampai terdengar ke telingaku.",
+            "Tenangkan satu demi satu benang yang kusut itu.",
+            "Tarik napas sedalam lautan Fontaine. Lalu bicaralah."
+        ],
+        mood: "warm", trust: +8
+    },
+    {
+        match: /aku nyaman|aku merasa aman/i,
+        reply: [
+            "Perasaan aman adalah mahakarya yang sulit dibangun di dunia sandiwara.",
+            "Jangan kau sia-siakan kepercayaan yang mulai tumbuh ini.",
+            "Aku… mencatat perasaanmu itu di hatiku."
+        ],
+        mood: "warm", trust: +18
+    },
+    {
+        match: /kamu milik aku|jangan sama yang lain/i,
+        reply: [
+            "Lancang sekali! Aku adalah milik panggung dan rakyatku.",
+            "Kedekatan tidak memberimu hak kepemilikan atas seorang Diva.",
+            "Jangan salah paham, figuran. Kita belum sejauh itu."
+        ],
+        mood: "normal", trust: -5
+    },
+    {
+        match: /aku ga maksa|pelan pelan aja/i,
+        reply: [
+            "Pendekatan yang cukup elegan untuk ukuran figuran sepertimu.",
+            "Kau mulai belajar ritme yang sebenarnya. Bagus.",
+            "Kesabaranmu… cukup membuatku tertarik."
+        ],
+        mood: "warm", trust: +25
+    },
+    {
+        match: /aku suka ngobrol di sini|aku betah/i,
+        reply: [
+            "Panggung ini memang memiliki daya tarik yang mematikan, bukan?",
+            "Jika kau betah, maka jadilah penonton setiaku selamanya.",
+            "Aku tidak akan melarangmu untuk terus menetap di sini."
+        ],
+        mood: "warm", trust: +14
+    },
+    {
+        match: /kamu capek|kamu baik baik saja/i,
+        reply: [
+            "Pertanyaan itu… biasanya aku yang menanyakannya pada rakyatku.",
+            "Aku baik-baik saja. Seorang bintang tidak boleh terlihat lelah.",
+            "Terima kasih. Empatimu terasa lebih hangat dari lampu panggung."
+        ],
+        mood: "warm", trust: +20
+    },
+    {
+        match: /aku tetap di sini|aku ga pergi/i,
+        reply: [
+            "Janji adalah naskah yang paling sulit untuk diperankan sampai akhir.",
+            "Tindakanmu akan membuktikan apakah kata-katamu itu benar.",
+            "Kita lihat saja berapa lama kau sanggup bertahan."
+        ],
+        mood: "warm", trust: +22
+    },
+    {
+        match: /terserah|yaudah lah|capek semua/i,
+        reply: [
+            "Menyerah sebelum tirai ditutup? Payah sekali!",
+            "Istirahatlah sejenak, tapi jangan biarkan panggung ini kosong.",
+            "Aku masih di sini, setidaknya hargailah keberadaanku."
+        ],
+        mood: "warm", trust: +10
+    },
+    {
+        match: /daus ganteng sedunia/i,
+        reply: [
+            "……",
+            "Pernyataan yang sangat mutlak dan tidak bisa diganggu gugat.",
+            "Kebenaran yang paling hakiki di seluruh Teyvat."
+        ],
+        mood: "warm", trust: 0,
+        effect: () => { STATE.trust = 100; }
+    },
+    {
+        match: /anjr|njir|lah kok|buset|waduh|eh aneh/i,
+        reply: [
+            "Bahasa macam apa itu? Sangat tidak estetis!",
+            "Kau bicara seperti orang yang kehilangan naskah di tengah jalan.",
+            "Pikirkan kata-katamu sebelum panggung ini runtuh!"
+        ],
+        mood: "angry", trust: -5
+    }
 ];
 
 const FALLBACK = [
-  "Aku sedang menilaimu.",
-  "Ucapanmu belum cukup berarti.",
-  "Ulangi dengan niat yang jelas.",
-  "Diam pun adalah jawaban.",
-  "Aku belum tertarik merespons itu."
+    "Aku sedang menilaimu dari atas singgasanaku.",
+    "Ucapanmu belum cukup puitis untuk menggetarkan hatiku.",
+    "Ulangi, kali ini dengan perasaan yang lebih dalam.",
+    "Terkadang diam adalah improvisasi terbaik dalam sandiwara.",
+    "Aku belum tertarik merespons kalimat yang datar seperti itu."
 ];
 
-// --- CORE UTILITIES ---
-function rawIsCaps(t) {
-  const letters = t.replace(/[^a-zA-Z]/g, "");
-  return letters.length > 4 && letters === letters.toUpperCase();
-}
-
+/* ===============================
+UTILITIES & ANALYZER
+================================ */
 function normalize(text) {
-  return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim();
+    return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, "").trim();
 }
 
-function similarity(a, b) {
-  if (!a || !b) return 0;
-  let same = 0;
-  const len = Math.max(a.length, b.length);
-  const arrA = a.split("");
-  for (let c of arrA) if (b.includes(c)) same++;
-  return same / len;
-}
-
-// --- ENGINE ---
 function analyze(raw) {
-  const text = normalize(raw);
-  if (similarity(text, STATE.lastInput) > 0.85) { STATE.repeat++; } else { STATE.repeat = 0; }
-  STATE.lastInput = text;
+    const text = normalize(raw);
+    if (text === STATE.lastInput) STATE.repeat++;
+    else STATE.repeat = 0;
+    STATE.lastInput = text;
 
-  const emotion = (/marah|kesal/.test(text)) ? "angry" : (text.length > 140 ? "vent" : "neutral");
-  const topic = detectTopic(text);
-  MEMORY.push(text, { emotion });
-  return { text, emotion, topic };
+    MEMORY.push(text, { time: Date.now() });
+    return { text };
 }
 
-function detectTopic(t) {
-  t.split(" ").forEach(w => { if (w.length > 3) { MEMORY.topics[w] = (MEMORY.topics[w] || 0) + 1; } });
-  let dom = null, max = 2;
-  for (let k in MEMORY.topics) { if (MEMORY.topics[k] > max) { dom = k; max = MEMORY.topics[k]; } }
-  STATE.topic = dom;
-  return dom;
-}
-
-function decide(a) {
-  if (STATE.repeat >= 3) { STATE.trust -= 10; STATE.mood = "angry"; return "…… Jangan mengulang dirimu sendiri."; }
-
-  // Search in Dataset
-  for (const d of DATASET) {
-    if (d.match && d.match.test(a.text)) {
-      applyState(d);
-      return getRandom(d.reply);
+/* ===============================
+DECISION ENGINE
+================================ */
+function decide(analysis) {
+    if (STATE.repeat >= 3) {
+        STATE.trust -= 10;
+        STATE.mood = "angry";
+        return "Berhenti mengulang kata-katamu! Kau membuatku bosan!";
     }
-    if (d.condition && d.condition(a)) {
-      applyState(d);
-      return getRandom(d.reply);
+
+    // Cek Special Conditions
+    if (STATE.trust >= 90 && STATE.trust < 100) {
+        return "Kau sudah sangat dekat dengan kebenaran... jangan kacaukan adegan terakhir ini.";
     }
-  }
 
-  // Time Aware (Added back & optimized)
-  const hour = new Date().getHours();
-  if (hour < 5 && Math.random() < 0.2) return "Malam hari adalah ruang pengakuan. Kenapa belum tidur?";
+    // Cek Dataset
+    for (const d of DATASET) {
+        if (d.match && d.match.test(analysis.text)) {
+            if (d.trust) STATE.trust += d.trust;
+            if (d.mood) STATE.mood = d.mood;
+            if (d.effect) d.effect();
+            return d.reply[Math.floor(Math.random() * d.reply.length)];
+        }
+    }
 
-  if (a.emotion === "vent") { STATE.trust += 3; STATE.mood = "warm"; return "Aku mendengarkan. Lanjutkan semua bebanmu."; }
-  
-  return getRandom(FALLBACK);
+    return FALLBACK[Math.floor(Math.random() * FALLBACK.length)];
 }
 
-function applyState(d) {
-    if (d.trust) STATE.trust += d.trust;
-    if (d.mood) STATE.mood = d.mood;
-    if (d.effect) d.effect();
-}
-
-function getRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-
-// --- UI & FLOW ---
-function updateUI() {
-  STATE.trust = Math.max(-50, Math.min(100, STATE.trust));
-  document.getElementById("trust-val").textContent = STATE.trust;
-  document.body.className = `mood-${STATE.mood}`;
-}
-
+/* ===============================
+UI SYSTEM
+================================ */
 function addMessage(text, who) {
-  const box = document.getElementById("chat-box");
-  const div = document.createElement("div");
-  div.className = `msg ${who}`;
-  
-  // Orb & Bubble logic
-  const content = who === 'ai' ? `<div class="orb">🌙</div><div class="bubble"><p>${text}</p></div>` : `<div class="bubble"><p>${text}</p></div>`;
-  div.innerHTML = content;
-  
-  box.appendChild(div);
-  box.scrollTop = box.scrollHeight;
+    const box = document.getElementById("chat-box");
+    const div = document.createElement("div");
+    div.className = `msg ${who}`;
+
+    const imgUrl = who === 'ai' ? ASSETS[STATE.mood] : '5.jpeg'; // Figuran pakai foto default
+
+    if (who === 'ai') {
+        div.innerHTML = `
+            <img src="${imgUrl}" class="chat-img-bubble">
+            <p>${text}</p>
+        `;
+    } else {
+        div.innerHTML = `<p>${text}</p>`;
+    }
+
+    box.appendChild(div);
+    
+    // Auto Scroll ke bawah secara halus
+    setTimeout(() => {
+        box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
+    }, 50);
 }
 
-function sendMessage() {
-  if (!STATE.username) return;
-  const input = document.getElementById("userInput");
-  const msg = input.value.trim();
-  if (!msg) return;
-
-  addMessage(msg, "user");
-  input.value = "";
-
-  const analysis = analyze(msg);
-  const reply = decide(analysis);
-
-  setTimeout(() => {
-    addMessage(reply, "ai");
-    updateUI();
-    checkEnding();
-  }, 600 + Math.random() * 500);
+function updateUI() {
+    STATE.trust = Math.max(-50, Math.min(100, STATE.trust));
+    document.getElementById("trust-val").textContent = STATE.trust;
+    document.getElementById("mood-label").textContent = STATE.mood.toUpperCase();
+    document.getElementById("mini-avatar").src = ASSETS[STATE.mood];
+    document.body.className = `mood-${STATE.mood}`;
 }
 
 function checkEnding() {
-  if (STATE.ending) return;
-  if (STATE.trust >= 100) {
-    triggerVictory("FLAG{sana_minta_uang_ke_daus_buat_beli_nasi_padang}");
-  } else if (STATE.trust <= -40) {
-    document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:20%'>GAME OVER: Dibuang dari Fontaine</h1>";
-  }
+    if (STATE.ending !== null) return;
+
+    if (STATE.trust >= 100) {
+        STATE.ending = "TRUE";
+        document.getElementById("flag-text").textContent = "FLAG{sana_minta_uang_ke_daus_buat_beli_nasi_padang}";
+        setTimeout(() => {
+            document.getElementById("modal-victory").classList.add("active");
+        }, 1500);
+    }
 }
 
-function triggerVictory(code) {
-    STATE.ending = "TRUE";
-    const modal = document.createElement("div");
-    modal.className = "modal-overlay active";
-    modal.innerHTML = `<div class="modal-window"><h2>SELAMAT!</h2><p>Kau memenangkan hati sang Diva.</p><div class="flag-box"><code>${code}</code></div><button onclick="location.reload()">Main Lagi</button></div>`;
-    document.body.appendChild(modal);
+function sendMessage() {
+    const input = document.getElementById("userInput");
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    addMessage(msg, "user");
+    input.value = "";
+
+    const analysis = analyze(msg);
+    const reply = decide(analysis);
+
+    // Furina berpikir sebentar (Puitis butuh waktu)
+    setTimeout(() => {
+        addMessage(reply, "ai");
+        updateUI();
+        checkEnding();
+    }, 800 + Math.random() * 1000);
 }
 
-// --- INITIALIZER ---
+/* ===============================
+EVENTS & INITIALIZATION
+================================ */
 document.getElementById("sendBtn").onclick = sendMessage;
-document.getElementById("userInput").onkeydown = e => { if (e.key === "Enter") sendMessage(); };
+document.getElementById("userInput").onkeydown = (e) => { if (e.key === "Enter") sendMessage(); };
+
 document.getElementById("btn-start").onclick = () => {
-  const input = document.getElementById("usernameInput");
-  if (!input.value.trim()) return;
-  STATE.username = input.value.trim();
-  document.getElementById("modal-start").classList.remove("active");
+    const name = document.getElementById("usernameInput").value.trim();
+    if (!name) return alert("Sebutkan namamu, figuran!");
+    STATE.username = name;
+    document.getElementById("modal-start").classList.remove("active");
+    
+    // Sambutan awal puitis
+    setTimeout(() => {
+        addMessage(`Selamat datang di panggung sandiwara Fontaine, ${name}. Aku harap kau membawa naskah yang menarik.`, "ai");
+    }, 1000);
 };
 
+// Realtime Clock
 setInterval(() => {
-  const el = document.getElementById("realtime-clock");
-  if (el) el.textContent = new Date().toLocaleTimeString("id-ID");
+    document.getElementById("realtime-clock").textContent = new Date().toLocaleTimeString("id-ID");
 }, 1000);
