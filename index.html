@@ -1,81 +1,113 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Furina — Trial of Trust</title>
+  <meta charset="UTF-8" />
+  <title>Furina — Trial of Trust</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<link rel="stylesheet" href="style.css">
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body class="mood-normal">
 
 <!-- ===============================
- MODAL START
+     START MODAL / INTRO
 ================================ -->
-<div id="modal-start" class="modal-overlay active">
-  <div class="modal-window">
-    <img src="5.jpeg" class="modal-avatar">
-    <h2 class="font-cinzel">PERATURAN PANGGUNG</h2>
-    <ul class="rules-list">
-      <li>Furina adalah pusat segalanya</li>
-      <li>Spam & cheat terdeteksi</li>
-      <li>Trust menentukan nasibmu</li>
-    </ul>
-    <input id="usernameInput" placeholder="Namamu..." required>
-    <button id="btn-start">MULAI</button>
-  </div>
-</div>
+<div id="modal-start" class="modal active">
+  <div class="modal-box">
 
-<!-- ===============================
- MODAL VICTORY (WAJIB)
-================================ -->
-<div id="modal-victory" class="modal-overlay">
-  <div class="modal-window">
-    <h2 class="font-cinzel">AKHIR PERTUNJUKAN</h2>
-    <p>Furina memberimu sesuatu:</p>
-    <code style="display:block;margin-top:12px;font-size:14px;"></code>
-    <button onclick="location.reload()">MAIN ULANG</button>
-  </div>
-</div>
-
-<!-- ===============================
- FLOATING STATUS
-================================ -->
-<div class="floating-status">
-  <div class="status-left">
-    <div class="moon-avatar">🌙</div>
-    <div>
-      <div id="mood-label">NORMAL</div>
-      <div id="realtime-clock">00:00</div>
+    <div class="intro-header">
+      <img src="assets/furina/1.png" class="intro-avatar" />
+      <h1>Furina</h1>
+      <p class="subtitle">Archon of Fontaine</p>
     </div>
-  </div>
-  <div class="status-right">
-    ❤️ <span id="trust-val">20</span>
+
+    <div class="intro-lore">
+      <p>
+        Furina adalah Archon Hydro dari Fontaine.  
+        Seorang figur penuh drama, keanggunan, dan rahasia.  
+        Di balik panggung keadilan, ia mengamati manusia dengan hati-hati.
+      </p>
+      <p>
+        Tempat ini bukan permainan biasa.  
+        Kepercayaan tidak bisa dipaksa.  
+        Setiap kata akan dinilai.
+      </p>
+    </div>
+
+    <div class="intro-input">
+      <label>Masukkan namamu</label>
+      <input
+        id="usernameInput"
+        type="text"
+        placeholder="Namamu..."
+        required
+      />
+      <button id="btn-start">Masuk ke Panggung</button>
+    </div>
+
   </div>
 </div>
 
 <!-- ===============================
- APP
+     TOP STATUS BAR (LOCKED)
 ================================ -->
-<div class="app-container">
-
-<div class="chat-wrapper">
-<main id="chat-box" class="chat-box"></main>
-</div>
-
-<footer class="input-section">
-  <div class="input-wrapper">
-    <input id="userInput" placeholder="Ucapkan sesuatu…">
-    <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+<header class="top-bar">
+  <div class="status-left">
+    <span class="label">Trust</span>
+    <span id="trust-val">20</span>
   </div>
-  <div class="credits">Dev: <b>Frdshdy</b></div>
+
+  <div class="status-center">
+    <span id="realtime-clock">00:00:00</span>
+  </div>
+
+  <div class="status-right">
+    <span class="label">Mood</span>
+    <span id="mood-val">Normal</span>
+  </div>
+</header>
+
+<!-- ===============================
+     MAIN CHAT AREA
+================================ -->
+<main class="chat-wrapper">
+
+  <div id="chat-box" class="chat-box">
+    <!-- message injected by JS -->
+  </div>
+
+</main>
+
+<!-- ===============================
+     INPUT BAR (FIXED BOTTOM)
+================================ -->
+<footer class="input-bar">
+  <input
+    id="userInput"
+    type="text"
+    placeholder="Ketik sesuatu dengan hati-hati..."
+    autocomplete="off"
+  />
+  <button id="sendBtn">Kirim</button>
 </footer>
 
+<!-- ===============================
+     VICTORY / ENDING MODAL
+================================ -->
+<div id="modal-victory" class="modal">
+  <div class="modal-box">
+    <h2>Ending Tercapai</h2>
+    <p>Kode yang kau dapatkan:</p>
+    <code>FLAG{???}</code>
+    <button onclick="location.reload()">Ulangi</button>
+  </div>
 </div>
 
+<!-- ===============================
+     JS CORE
+================================ -->
 <script src="script.js"></script>
+
 </body>
 </html>
