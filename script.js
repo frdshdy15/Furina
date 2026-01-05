@@ -150,27 +150,31 @@ const BRAIN = {
         return score;
     },
 
-     // 3. LOGIC PROCESSING (Pengambilan Keputusan)
-    process(rawText) {
-        const text = rawText.toLowerCase().trim(); // Gunakan 'text'
+         // 3. LOGIC PROCESSING (Pengambilan Keputusan)
+        process(rawText) {
+        const text = rawText.toLowerCase().trim();
         const intent = this.classifyIntent(text);
         const sentiment = this.analyzeSentiment(text);
+
+        // Update Memori Topik agar sistem tidak bingung/crash
+        this.context.topicHistory.push(intent);
+        if (this.context.topicHistory.length > 10) this.context.topicHistory.shift();
 
         // Update Trust Berdasarkan Sentimen Global
         STATE.trust += Math.round(sentiment * 15);
 
         // --- BRAIN LOGIC FLOW ---
 
-        // Response: Jika user toxic berkali-kali
+        // 1. Response: Jika user toxic berkali-kali
         if (this.context.aggressiveCount >= 2) {
-            this.context.aggressiveCount = 0; // Reset
+            this.context.aggressiveCount = 0; 
             return {
                 reply: "Kesabaranku bukanlah panggung yang bisa kau injak-injak! Jika kau tak bisa menjaga lisan, lebih baik tirai ini kututup sekarang juga!",
                 mood: "angry", trust: -15
             };
         }
 
-        // Response: Jika nanya Daus terus (Cemburu)
+        // 2. Response: Jika nanya Daus terus (Cemburu)
         if (this.context.mentionDausCount > 2) {
             return {
                 reply: "Kau begitu terobsesi pada Daus sampai melupakan siapa bintang utama di depanmu ini? Hmph, sungguh tidak sopan!",
@@ -178,7 +182,7 @@ const BRAIN = {
             };
         }
 
-        // Response: Kencan (Tergantung Trust)
+        // 3. Response: Kencan (Tergantung Trust)
         if (intent === "PROPOSAL") {
             if (STATE.trust < 60) {
                 return {
@@ -193,7 +197,7 @@ const BRAIN = {
             }
         }
 
-        // Response: Curhat
+        // 4. Response: Curhat
         if (intent === "EMPATHY_NEEDED") {
             return {
                 reply: "Jangan biarkan air matamu menenggelamkan harapanmu. Di panggung Fontaine, tragedi hanyalah awal dari babak kemenangan yang indah. Aku mendengarmu...",
@@ -201,7 +205,7 @@ const BRAIN = {
             };
         }
 
-        // Response: Asal Daus (Kritis)
+        // 5. Response: Asal Daus (Kritis)
         if (intent === "CREATOR_ORIGIN") {
             return {
                 reply: "Daus? Dia adalah sang Arsitek Takdir yang tinggal di dimensi di mana kode-kode menjadi melodi. Ia berasal dari 'Alam Realitas' di luar Fontaine.",
@@ -209,42 +213,7 @@ const BRAIN = {
             };
         }
 
-        // --- FIX BUG: Ganti 'analysis' menjadi 'text' ---
-        
-        // Pengecekan input pendek 1
-        if (sentiment === 0 && intent === "GENERAL" && text.length < 5) {
-            return {
-                reply: "Hanya itu? Naskahmu bahkan lebih pendek dari durasi tepuk tangan penonton yang bosan.",
-                mood: "normal", trust: -1
-            };
-        }
-        
-        // Pengecekan input pendek 2
-        if (text.length < 3) {
-            return {
-                reply: "Hanya satu atau dua kata? Kau pikir aku ini mesin kasir? Berikan aku dialog yang layak untuk seorang Diva!",
-                mood: "normal", trust: -2
-            };
-        }
-
-        // Cek pengulangan topik
-        if (this.context.topicHistory.length > 5 && new Set(this.context.topicHistory.slice(-3)).size === 1) {
-            return {
-                reply: "Kau terus-menerus membahas hal yang sama. Apa kau kekurangan ide, atau memang naskah hidupmu selevel figuran pasar?",
-                mood: "normal", trust: -5
-            };
-        }
-
-        // Cek waktu
-        const hour = new Date().getHours();
-        if (hour >= 0 && hour <= 4 && Math.random() > 0.7) {
-            return {
-                reply: "Lihatlah jam itu! Kenapa kau masih berkeliaran di sini? Seorang Diva butuh waktu istirahat agar tetap mempesona esok hari!",
-                mood: "normal", trust: +2
-            };
-        }
-
-        // Respon pujian
+        // 6. Response: Pujian (Pastikan ini di atas return null)
         if (intent === "FLATTERING") {
             if (STATE.trust < 10) {
                 return {
@@ -259,8 +228,41 @@ const BRAIN = {
             }
         }
 
-        return null; // Lanjut ke dataset jika tidak ada logika khusus
+        // 7. Pengecekan input pendek
+        if (sentiment === 0 && intent === "GENERAL" && text.length < 5) {
+            return {
+                reply: "Hanya itu? Naskahmu bahkan lebih pendek dari durasi tepuk tangan penonton yang bosan.",
+                mood: "normal", trust: -1
+            };
+        }
+        
+        if (text.length < 3) {
+            return {
+                reply: "Hanya satu atau dua kata? Kau pikir aku ini mesin kasir? Berikan aku dialog yang layak untuk seorang Diva!",
+                mood: "normal", trust: -2
+            };
+        }
+
+        // 8. Cek pengulangan topik
+        if (this.context.topicHistory.length > 5 && new Set(this.context.topicHistory.slice(-3)).size === 1) {
+            return {
+                reply: "Kau terus-menerus membahas hal yang sama. Apa kau kekurangan ide, atau memang naskah hidupmu selevel figuran pasar?",
+                mood: "normal", trust: -5
+            };
+        }
+
+        // 9. Cek waktu malam
+        const hour = new Date().getHours();
+        if (hour >= 0 && hour <= 4 && Math.random() > 0.7) {
+            return {
+                reply: "Lihatlah jam itu! Kenapa kau masih berkeliaran di sini? Seorang Diva butuh waktu istirahat agar tetap mempesona esok hari!",
+                mood: "normal", trust: +2
+            };
+        }
+
+        return null; // SELESAI. Jika tidak ada yang cocok, baru ke dataset.
     }
+
 
 };
 
@@ -628,6 +630,10 @@ const FALLBACK = [
 /* ===============================
    CORE ENGINE: ANALYZER & DECISION
    ================================ */
+
+// Tambahkan ini jika ingin menyimpan history mentah
+const MEMORY = []; 
+
 function analyze(raw) {
     const text = raw.toLowerCase().trim();
     
@@ -639,12 +645,13 @@ function analyze(raw) {
     }
     STATE.lastInput = text;
     
-    // Simpan ke memori singkat
-    MEMORY.push(text);
+    // Tambahkan ke MEMORY
+    MEMORY.push(text); 
+    if (MEMORY.length > 20) MEMORY.shift(); // Biar gak keberatan ram-nya
+    
     return text;
 }
 
-// GANTI FUNGSI LAMA KAMU DENGAN YANG INI:
 function decide(analysis) {
     // 1. Proteksi Spam
     if (STATE.repeat >= 3) {
@@ -654,17 +661,16 @@ function decide(analysis) {
     }
 
     // 2. Jalankan Proses Machine Learning (BRAIN)
-    // Ini akan memproses logika kencan, daus, curhat, dll secara kritis
     const brainResult = BRAIN.process(analysis);
     
     if (brainResult) {
-        // Jika BRAIN menemukan logika khusus, gunakan hasilnya
+        // STATE.trust SUDAH diupdate di dalam BRAIN.process, 
+        // jadi kita hanya perlu update Mood dan mengembalikan Reply puitis.
         STATE.mood = brainResult.mood;
-        if (brainResult.trust) STATE.trust += brainResult.trust;
         return poeticEnhancer(brainResult.reply);
     }
 
-    // 3. Jika BRAIN tidak menemukan pola (Null), baru cek DATASET Manual
+    // 3. Jika BRAIN tidak menemukan pola (Null), cek DATASET Manual
     for (const d of DATASET) {
         if (d.match && d.match.test(analysis)) {
             if (d.trust) STATE.trust += d.trust;
