@@ -150,9 +150,9 @@ const BRAIN = {
         return score;
     },
 
-    // 3. LOGIC PROCESSING (Pengambilan Keputusan)
+     // 3. LOGIC PROCESSING (Pengambilan Keputusan)
     process(rawText) {
-        const text = rawText.toLowerCase();
+        const text = rawText.toLowerCase().trim(); // Gunakan 'text'
         const intent = this.classifyIntent(text);
         const sentiment = this.analyzeSentiment(text);
 
@@ -208,59 +208,60 @@ const BRAIN = {
                 mood: "warm", trust: +5
             };
         }
-// Tambahkan ini di dalam BRAIN.process sebelum return null
-if (sentiment === 0 && intent === "GENERAL" && analysis.length < 5) {
-    return {
-        reply: "Hanya itu? Naskahmu bahkan lebih pendek dari durasi tepuk tangan penonton yang bosan.",
-        mood: "normal", trust: -1
-    };
-}
-// Letakkan di dalam BRAIN.process sebelum return null
-if (analysis.length < 3) {
-    return {
-        reply: "Hanya satu atau dua kata? Kau pikir aku ini mesin kasir? Berikan aku dialog yang layak untuk seorang Diva!",
-        mood: "normal", trust: -2
-    };
-}
 
-if (this.context.topicHistory.length > 5 && new Set(this.context.topicHistory.slice(-3)).size === 1) {
-    return {
-        reply: "Kau terus-menerus membahas hal yang sama. Apa kau kekurangan ide, atau memang naskah hidupmu selevel figuran pasar?",
-        mood: "normal", trust: -5
-    };
-}
-const hour = new Date().getHours();
-if (hour >= 0 && hour <= 4 && Math.random() > 0.7) {
-    return {
-        reply: "Lihatlah jam itu! Kenapa kau masih berkeliaran di sini? Seorang Diva butuh waktu istirahat agar tetap mempesona esok hari!",
-        mood: "normal", trust: +2
-    };
-}
-if (intent === "FLATTERING") {
-    if (STATE.trust < 10) {
-        return {
-            reply: "Pujianmu terdengar palsu dan murahan. Apa kau sedang merencanakan sesuatu untuk menjatuhkanku?",
-            mood: "angry", trust: -5
-        };
-    } else {
-        return {
-            reply: "Hmph, kuterima pujian itu. Setidaknya seleramu mulai membaik setelah bersamaku.",
-            mood: "warm", trust: +5
-        };
-    }
-}
+        // --- FIX BUG: Ganti 'analysis' menjadi 'text' ---
+        
+        // Pengecekan input pendek 1
+        if (sentiment === 0 && intent === "GENERAL" && text.length < 5) {
+            return {
+                reply: "Hanya itu? Naskahmu bahkan lebih pendek dari durasi tepuk tangan penonton yang bosan.",
+                mood: "normal", trust: -1
+            };
+        }
+        
+        // Pengecekan input pendek 2
+        if (text.length < 3) {
+            return {
+                reply: "Hanya satu atau dua kata? Kau pikir aku ini mesin kasir? Berikan aku dialog yang layak untuk seorang Diva!",
+                mood: "normal", trust: -2
+            };
+        }
+
+        // Cek pengulangan topik
+        if (this.context.topicHistory.length > 5 && new Set(this.context.topicHistory.slice(-3)).size === 1) {
+            return {
+                reply: "Kau terus-menerus membahas hal yang sama. Apa kau kekurangan ide, atau memang naskah hidupmu selevel figuran pasar?",
+                mood: "normal", trust: -5
+            };
+        }
+
+        // Cek waktu
+        const hour = new Date().getHours();
+        if (hour >= 0 && hour <= 4 && Math.random() > 0.7) {
+            return {
+                reply: "Lihatlah jam itu! Kenapa kau masih berkeliaran di sini? Seorang Diva butuh waktu istirahat agar tetap mempesona esok hari!",
+                mood: "normal", trust: +2
+            };
+        }
+
+        // Respon pujian
+        if (intent === "FLATTERING") {
+            if (STATE.trust < 10) {
+                return {
+                    reply: "Pujianmu terdengar palsu dan murahan. Apa kau sedang merencanakan sesuatu untuk menjatuhkanku?",
+                    mood: "angry", trust: -5
+                };
+            } else {
+                return {
+                    reply: "Hmph, kuterima pujian itu. Setidaknya seleramu mulai membaik setelah bersamaku.",
+                    mood: "warm", trust: +5
+                };
+            }
+        }
 
         return null; // Lanjut ke dataset jika tidak ada logika khusus
     }
-};
 
-
-const MEMORY = {
-    short: [],
-    push(input) {
-        this.short.push({ input, time: Date.now() });
-        if (this.short.length > 30) this.short.shift();
-    }
 };
 
 /* ===============================
