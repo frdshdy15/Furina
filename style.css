@@ -1,46 +1,55 @@
 /* ============================================================
-   [1] BASE & VARIABLES
+   [1] VARIABLES & THEMES
    ============================================================ */
 :root {
     --primary: #00d2ff;
-    --dark: #000b14;
-    --glass: rgba(0, 31, 63, 0.85);
+    --secondary: #001220;
+    --glass: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);
     --text: #e0f7ff;
-    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+body.mood-angry { --primary: #ff4b2b; }
+body.mood-warm { --primary: #ff80ab; }
+
+/* ============================================================
+   [2] CORE RESET & LAYOUT
+   ============================================================ */
 * {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     -webkit-tap-highlight-color: transparent;
 }
 
 body, html {
-    width: 100%;
-    height: 100%;
+    width: 100%; height: 100%;
     overflow: hidden;
-    background: var(--dark);
+    background: var(--secondary);
     font-family: 'Poppins', sans-serif;
     color: var(--text);
 }
 
-.font-cinzel { font-family: 'Cinzel', serif; letter-spacing: 1px; }
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+}
 
 /* ============================================================
-   [2] MODAL WINDOW SYSTEM (The Pop-ups)
+   [3] MODAL WINDOW (Aturan & Victory)
    ============================================================ */
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.9);
-    display: none; /* Sembunyi by default */
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: none;
     align-items: center;
     justify-content: center;
     z-index: 999;
     padding: 20px;
-    backdrop-filter: blur(8px);
 }
 
 .modal-overlay.active { display: flex; }
@@ -53,136 +62,118 @@ body, html {
     max-width: 350px;
     padding: 25px;
     text-align: center;
-    box-shadow: 0 0 30px rgba(0, 210, 255, 0.2);
-    animation: zoomIn 0.4s ease;
+    animation: zoomIn 0.3s ease;
 }
 
 .modal-avatar {
-    width: 80px;
-    height: 80px;
+    width: 80px; height: 80px;
     border-radius: 50%;
     border: 2px solid var(--primary);
     margin-bottom: 15px;
+    object-fit: cover;
 }
-
-.rules-list {
-    text-align: left;
-    list-style: none;
-    margin: 20px 0;
-    font-size: 0.85rem;
-}
-
-.rules-list li { margin-bottom: 10px; color: #b0dfff; }
-.rules-list i { color: var(--primary); margin-right: 8px; }
-
-#usernameInput {
-    width: 100%;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid var(--primary);
-    background: rgba(0,0,0,0.5);
-    color: white;
-    margin-bottom: 15px;
-    outline: none;
-}
-
-.btn-primary {
-    width: 100%;
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    background: var(--primary);
-    color: var(--dark);
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* Victory Style */
-.victory-style { border-color: #ff80ab; box-shadow: 0 0 30px rgba(255, 128, 171, 0.4); }
-.love-animation { font-size: 3rem; animation: heartbeat 1.2s infinite; }
 
 /* ============================================================
-   [3] MAIN CHAT LAYOUT
+   [4] CHAT INTERFACE
    ============================================================ */
-.app-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-}
-
 .main-header {
-    padding: 15px;
     background: var(--glass);
+    backdrop-filter: blur(15px);
     border-bottom: 1px solid var(--glass-border);
+    padding: 15px;
 }
 
 .header-content { display: flex; align-items: center; gap: 12px; }
-
-.avatar-box { position: relative; }
-.avatar-box img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); }
-.status-dot { 
-    position: absolute; bottom: 2px; right: 2px; 
-    width: 10px; height: 10px; background: #00ff88; 
-    border-radius: 50%; border: 2px solid var(--dark);
+.avatar-box img { 
+    width: 45px; height: 45px; 
+    border-radius: 50%; border: 2px solid var(--primary); 
+    object-fit: cover;
 }
-
-.user-info h1 { font-size: 0.9rem; color: var(--primary); }
 
 .chat-viewport {
     flex: 1;
     overflow-y: auto;
-    padding: 15px;
+    padding: 20px 15px;
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
-.msg {
-    max-width: 80%;
-    padding: 12px;
-    border-radius: 15px;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    animation: fadeIn 0.3s ease;
+/* FIX: UKURAN GAMBAR DI DALAM CHAT */
+.chat-img-bubble {
+    width: 120px; /* Kunci ukuran lebar */
+    height: 120px; /* Kunci ukuran tinggi */
+    border-radius: 12px;
+    object-fit: cover; /* Biar nggak gepeng */
+    display: block;
+    margin-bottom: 8px;
+    border: 2px solid var(--primary);
 }
 
-.msg.ai { align-self: flex-start; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); }
-.msg.user { align-self: flex-end; background: var(--primary); color: var(--dark); font-weight: 500; }
+.msg {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 0.95rem;
+    animation: slideUp 0.3s ease;
+}
+
+.msg.ai {
+    align-self: flex-start;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-bottom-left-radius: 2px;
+}
+
+.msg.user {
+    align-self: flex-end;
+    background: var(--primary);
+    color: var(--secondary);
+    border-bottom-right-radius: 2px;
+}
 
 /* ============================================================
-   [4] INPUT & FOOTER
+   [5] INPUT BAR
    ============================================================ */
-.input-section { padding: 15px; background: var(--dark); }
+.input-section {
+    padding: 15px;
+    background: var(--secondary);
+}
+
 .input-wrapper {
-    display: flex; gap: 10px; background: rgba(255,255,255,0.05);
-    padding: 5px; border-radius: 25px; border: 1px solid var(--glass-border);
+    display: flex;
+    gap: 10px;
+    background: var(--glass);
+    padding: 5px 5px 5px 15px;
+    border-radius: 25px;
+    border: 1px solid var(--glass-border);
 }
 
 .input-wrapper input {
-    flex: 1; background: none; border: none; color: white;
-    padding-left: 15px; outline: none;
+    flex: 1;
+    background: none;
+    border: none;
+    color: white;
+    outline: none;
 }
 
 #sendBtn {
-    width: 40px; height: 40px; border-radius: 50%;
-    background: var(--primary); border: none; color: var(--dark);
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: none; color: var(--secondary);
 }
-
-.credits { text-align: center; font-size: 0.7rem; margin-top: 10px; opacity: 0.5; }
 
 /* ============================================================
-   [5] ANIMATIONS
+   [6] ANIMATIONS
    ============================================================ */
 @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes heartbeat {
+@keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Victory Love Animation */
+.love-animation { font-size: 3rem; animation: pulse 1.2s infinite; }
+@keyframes pulse {
     0% { transform: scale(1); }
-    25% { transform: scale(1.1); }
-    50% { transform: scale(1); }
-    75% { transform: scale(1.1); }
+    50% { transform: scale(1.1); }
     100% { transform: scale(1); }
 }
-
-/* Mood Changes melalui Body Class */
-body.mood-angry { --primary: #ff4747; }
-body.mood-warm { --primary: #ff80ab; }
