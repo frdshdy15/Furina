@@ -2,103 +2,86 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Furina: The Final Judgment</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="mood-normal">
 
-    <div class="vignette"></div>
-
-    <section id="screen-loading" class="screen active">
-        <div class="loader-content">
-            <div class="spinner"></div>
-            <h2 class="loading-text">Mempersiapkan Panggung...</h2>
-        </div>
-    </section>
-
-    <section id="screen-welcome" class="screen">
-        <div class="container welcome-wrap">
-            <div class="hero-section">
-                <div class="avatar-frame">
-                    <img src="5.jpeg" alt="Furina" class="img-main">
-                </div>
-                <h1 class="font-cinzel">FURINA DE FONTAINE</h1>
-                <p class="subtitle">"Keadilan, Sandiwara, dan Takdirmu."</p>
+    <div id="modal-start" class="modal-overlay active">
+        <div class="modal-window">
+            <div class="modal-header">
+                <img src="5.jpeg" alt="Furina" class="modal-avatar">
+                <h2 class="font-cinzel">PERATURAN PANGGUNG</h2>
             </div>
-
-            <div class="form-card">
-                <input type="text" id="usernameInput" placeholder="Sebutkan namamu, penonton..." autocomplete="off">
-                <button id="btn-to-prologue" class="btn-main">MULAI PERTUNJUKAN</button>
+            <div class="modal-body">
+                <ul class="rules-list">
+                    <li><i class="fas fa-star"></i> Furina adalah bintang utama.</li>
+                    <li><i class="fas fa-shield-alt"></i> Dilarang melakukan Copy-Paste.</li>
+                    <li><i class="fas fa-heart"></i> Jaga Trust agar tidak di-Judgement.</li>
+                </ul>
+                <input type="text" id="usernameInput" placeholder="Masukkan namamu, figuran..." autocomplete="off">
             </div>
-
-            <div class="footer-note">
-                <p>Designed by <strong>Frdshdy</strong></p>
-                <div class="socials">
-                    <a href="#"><i class="fab fa-instagram"></i> frdshdy_15</a>
-                </div>
+            <div class="modal-footer">
+                <button id="btn-start" class="btn-primary">MULAI PERTUNJUKAN</button>
             </div>
         </div>
-    </section>
+    </div>
 
-    <section id="screen-prologue" class="screen">
-        <div class="container story-wrap">
-            <div class="story-card">
-                <div class="story-img-box">
-                    <img src="5.jpeg" id="img-prologue" alt="Story">
+    <div id="modal-victory" class="modal-overlay">
+        <div class="modal-window victory-style">
+            <div class="confetti-container"></div> <div class="modal-header">
+                <div class="love-animation">❤️</div>
+                <h2 class="font-cinzel">SELAMAT!</h2>
+            </div>
+            <div class="modal-body">
+                <p>Kau telah memenangkan hati sang Diva!</p>
+                <div class="flag-box">
+                    <code>FLAG{FURINA_LOVES_YOU}</code>
                 </div>
-                <div class="story-body">
-                    <div id="text-prologue" class="typewriter">
-                        </div>
-                </div>
-                <button id="btn-to-chat" class="btn-main">LANJUTKAN <i class="fas fa-arrow-right"></i></button>
+            </div>
+            <div class="modal-footer">
+                <button onclick="location.reload()" class="btn-primary">MAIN LAGI</button>
             </div>
         </div>
-    </section>
+    </div>
 
-    <section id="screen-chat" class="screen">
-        <header class="chat-header">
-            <div class="user-meta">
-                <img src="5.jpeg" id="mini-avatar" class="avatar-mini">
-                <div class="user-text">
-                    <span id="mood-label">THEATRICAL</span>
-                    <small id="clock">00:00</small>
+    <div class="app-container">
+        <header class="main-header">
+            <div class="header-content">
+                <div class="avatar-box">
+                    <img src="5.jpeg" id="mini-avatar" alt="Furina">
+                    <div class="status-dot"></div>
                 </div>
-            </div>
-            <div class="stats">
+                <div class="user-info">
+                    <h1 id="mood-label">THEATRICAL</h1>
+                    <small id="realtime-clock">00:00:00</small>
+                </div>
                 <div class="trust-badge">
-                    <i class="fas fa-heart"></i> <span id="trust-val">20</span>
+                    <i class="fas fa-heart"></i>
+                    <span id="trust-val">20</span>
                 </div>
             </div>
         </header>
 
-        <main id="chat-box" class="chat-container">
+        <main id="chat-box" class="chat-viewport">
             </main>
 
-        <footer class="chat-input-bar">
-            <div class="input-group">
-                <input type="text" id="chatInput" placeholder="Bicaralah..." autocomplete="off">
-                <button id="btn-send"><i class="fas fa-paper-plane"></i></button>
+        <footer class="input-section">
+            <div class="input-wrapper">
+                <input type="text" id="userInput" placeholder="Ketik pesan..." autocomplete="off">
+                <button id="sendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <div class="credits">
+                Dev: <b>Frdshdy</b> | @frdshdy_15
             </div>
         </footer>
-    </section>
-
-    <section id="screen-ending" class="screen">
-        <div class="container ending-wrap">
-            <div class="ending-card">
-                <i class="fas fa-trophy gold-icon"></i>
-                <h2>PANGGUNG USAI</h2>
-                <div class="reward-box">
-                    <span>REWARD KODE:</span>
-                    <code id="flag-text">DECRYPTING...</code>
-                </div>
-                <button class="btn-main" onclick="location.reload()">MAIN LAGI</button>
-            </div>
-        </div>
-    </section>
+    </div>
 
     <script src="script.js"></script>
 </body>
