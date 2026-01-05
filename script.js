@@ -1,258 +1,229 @@
 /**
- * FURINA DEUS EX MACHINA - CORE SCRIPT (FIXED)
- * Version: 3.1 (Stable Mobile)
- * Author: Frdshdy
+ * FURINA DEUS EX MACHINA - CORE SCRIPT V4
+ * Dirancang untuk skalabilitas ribuan baris dataset.
  */
 
 "use strict";
 
 // ============================================================
-// [1] GLOBAL DATASET (The Knowledge Base)
+// [1] DATABASE DATASET (Bagian yang bisa kamu perbanyak nanti)
 // ============================================================
-const FURINA_DATA = {
+const FURINA_DB = {
+    // Cerita perkenalan di layar Prologue
     prologue: [
-        { text: "Selamat datang di panggung sandiwara Fontaine... Aku adalah Furina de Fontaine!", img: "5.jpeg" },
-        { text: "Di sini, setiap kata adalah naskah, dan setiap tindakan adalah pertunjukan. Jangan buat aku bosan!", img: "5.jpeg" },
-        { text: "Aku sangat benci orang yang tidak sopan, pengkhianat, dan... macaron yang sudah basi!", img: "3.jpeg" },
-        { text: "Sekarang namamu sudah tercatat dalam arsipku. Mari kita mulai pertunjukannya!", img: "4.jpeg" }
+        {
+            text: "Selamat datang di panggung sandiwara Fontaine... Aku adalah Furina de Fontaine!",
+            image: "5.jpeg"
+        },
+        {
+            text: "Aku harap kau mengerti etikanya. Di panggungku, tidak ada tempat untuk kebosanan.",
+            image: "5.jpeg"
+        },
+        {
+            text: "Jangan sekali-kali meremehkanku, atau kau akan merasakan keadilan yang tajam!",
+            image: "2.jpeg"
+        }
     ],
 
-    knowledge: {
+    // Logika respon chat
+    responses: {
         greeting: {
-            keywords: ["halo", "hai", "pagi", "siang", "malam", "p", "oy", "hey", "halo furina"],
-            responses: [
+            keys: ["halo", "hai", "pagi", "siang", "malam", "p", "hey"],
+            text: [
                 "Kehadiranmu tepat waktu, figuran favoritku!",
-                "Ah, kau datang lagi. Ingin melihat penampilanku hari ini?",
-                "Panggung ini terasa sepi tanpamu... Maksudku, tanpa penonton!"
+                "Ah, kau datang lagi. Ingin melihat penampilanku?",
+                "Panggung ini terasa sepi tanpa penonton sepertimu."
             ],
-            mood: "HAPPY"
+            mood: "NORMAL"
         },
         toxic: {
-            keywords: ["anjing", "bego", "tolol", "goblok", "jelek", "babi", "mati", "buruk", "bangsat"],
-            responses: [
-                "Lidahmu tajam sekali! Apa begini caramu bicara pada Sang Archon?!",
-                "Kekasaranmu tidak akan membuat panggungmu lebih tinggi. Jaga etikamu!",
-                "Hmph! Aku akan pura-pura tidak dengar itu... untuk kali ini saja."
+            keys: ["anjing", "bego", "tolol", "goblok", "jelek", "babi", "mati"],
+            text: [
+                "Lidahmu tajam sekali! Jaga etikamu di hadapan Diva!",
+                "Kekasaranmu tidak akan membuatmu terlihat keren.",
+                "Hmph! Aku akan pura-pura tidak dengar itu... kali ini saja."
             ],
             mood: "ANGRY"
         },
-        flirt: {
-            keywords: ["cantik", "sayang", "cinta", "suka", "manis", "pacar", "nikah", "loveyou"],
-            responses: [
-                "A-apa?! Jangan sembarang bicara! Aku ini bintang utama!",
-                "Pujianmu lumayan... tapi jangan harap aku akan langsung luluh.",
-                "Wajahmu memerah? Lucu sekali melihatmu mencoba merayuku!"
+        praise: {
+            keys: ["cantik", "sayang", "cinta", "suka", "manis", "hebat"],
+            text: [
+                "A-apa?! Tentu saja aku hebat! Aku ini bintang utama!",
+                "Pujianmu lumayan... tapi jangan harap aku luluh begitu saja.",
+                "Wajahmu memerah? Lucu sekali melihatmu merayuku."
             ],
             mood: "WARM"
-        },
-        mystery: {
-            keywords: ["flag", "rahasia", "kode", "harta", "hadiah", "mana flag"],
-            responses: [
-                "Kau menginginkan sesuatu dariku? Tunjukkan dulu kesetiaanmu!",
-                "Rahasia adalah bumbu dari setiap pertunjukan yang hebat.",
-                "Mungkin nanti... jika kau bisa membuatku benar-benar terkesan."
-            ],
-            mood: "POUT"
         }
     },
 
+    // Jawaban jika tidak ada keyword yang cocok (Philosophy Mode)
     philosophy: [
-        "Kebenaran hanyalah naskah yang ditulis oleh mereka yang menang.",
-        "Air mata adalah kata-kata yang tidak bisa diucapkan oleh lidah.",
-        "Panggung ini lebih nyata daripada dunia di luar sana, bukan?",
-        "Terkadang, menjadi orang lain jauh lebih mudah daripada menjadi diri sendiri."
+        "Kebenaran hanyalah naskah yang ditulis oleh pemenang.",
+        "Air mata adalah kata-kata yang tidak sanggup diucapkan lidah.",
+        "Panggung ini lebih nyata daripada dunia di luar sana.",
+        "Terkadang menjadi orang lain jauh lebih mudah daripada menjadi diri sendiri."
     ],
 
-    moodAssets: {
+    // Pemetaan foto berdasarkan Mood
+    assets: {
         NORMAL: "5.jpeg",
         SAD: "1.jpeg",
         ANGRY: "2.jpeg",
         POUT: "3.jpeg",
-        WARM: "4.jpeg",
-        HAPPY: "4.jpeg"
+        WARM: "4.jpeg"
     }
 };
 
 // ============================================================
-// [2] STATE MANAGEMENT
+// [2] GLOBAL STATE (Status Game)
 // ============================================================
 const STATE = {
-    username: "",
+    name: "Figuran",
     trust: 20,
     mood: "NORMAL",
-    currentStoryIdx: 0,
-    isTyping: false
+    prologueStep: 0,
+    isProcessing: false
 };
 
 // ============================================================
-// [3] CORE ENGINE
+// [3] UI CONTROLLER (Manipulasi Tampilan)
+// ============================================================
+const UI = {
+    // Pindah layar dengan aman
+    switchScreen(toId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        const target = document.getElementById(toId);
+        if (target) target.classList.add('active');
+    },
+
+    // Tambah bubble chat
+    addBubble(msg, type, img = null) {
+        const box = document.getElementById('chat-box');
+        const div = document.createElement('div');
+        div.className = `msg ${type}`;
+        
+        if (img) {
+            const elImg = document.createElement('img');
+            elImg.src = img;
+            elImg.className = 'chat-img-bubble';
+            div.appendChild(elImg);
+        }
+
+        const p = document.createElement('p');
+        p.textContent = msg;
+        div.appendChild(p);
+
+        box.appendChild(div);
+        box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
+    },
+
+    // Update status bar & warna tema
+    updateStatus() {
+        document.body.className = `mood-${STATE.mood.toLowerCase()}`;
+        document.getElementById('mood-label').textContent = STATE.mood;
+        document.getElementById('trust-val').textContent = STATE.trust;
+        document.getElementById('mini-avatar').src = FURINA_DB.assets[STATE.mood];
+    }
+};
+
+// ============================================================
+// [4] CORE ENGINE (Logika Utama)
 // ============================================================
 const ENGINE = {
     init() {
-        console.log("Furina Engine Initialized...");
-        this.setupEventListeners();
-        this.startClock();
-        
-        // Anti-Stuck: Paksa masuk ke Welcome setelah 2.5 detik
-        setTimeout(() => {
-            this.switchScreen('loading', 'welcome');
-        }, 2500);
+        // 1. Loading Timeout (Anti-Stuck)
+        setTimeout(() => UI.switchScreen('screen-welcome'), 2000);
+
+        // 2. Event Listeners
+        document.getElementById('btn-to-prologue').onclick = () => this.startPrologue();
+        document.getElementById('btn-to-chat').onclick = () => this.nextStory();
+        document.getElementById('btn-send').onclick = () => this.handleChat();
+        document.getElementById('chatInput').onkeypress = (e) => { if(e.key === 'Enter') this.handleChat(); };
+
+        // 3. Jam Realtime
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').textContent = 
+                now.getHours().toString().padStart(2, '0') + ":" + 
+                now.getMinutes().toString().padStart(2, '0');
+        }, 1000);
     },
 
-    setupEventListeners() {
-        const startBtn = document.getElementById('startBtn');
-        const nextStoryBtn = document.getElementById('nextStoryBtn');
-        const sendBtn = document.getElementById('sendBtn');
-        const userInput = document.getElementById('userInput');
-
-        if(startBtn) startBtn.onclick = () => this.handleStart();
-        if(nextStoryBtn) nextStoryBtn.onclick = () => this.handleStory();
-        if(sendBtn) sendBtn.onclick = () => this.handleChat();
-        if(userInput) {
-            userInput.onkeydown = (e) => { 
-                if (e.key === 'Enter') this.handleChat(); 
-            };
-        }
+    startPrologue() {
+        const inputName = document.getElementById('usernameInput').value;
+        if (!inputName) return alert("Masukkan namamu dulu!");
+        STATE.name = inputName;
+        UI.switchScreen('screen-prologue');
+        this.nextStory();
     },
 
-    handleStart() {
-        const nameInput = document.getElementById('usernameInput');
-        if (!nameInput.value.trim()) {
-            alert("Siapa namamu, figuran? Jangan biarkan naskah ini kosong!");
-            return;
-        }
-        STATE.username = nameInput.value;
-        this.switchScreen('welcome', 'prologue');
-        this.handleStory(); 
-    },
-
-    handleStory() {
-        const storyText = document.getElementById('storyText');
-        const prologueImg = document.getElementById('prologueImg');
-        const data = FURINA_DATA.prologue[STATE.currentStoryIdx];
-
+    nextStory() {
+        const data = FURINA_DB.prologue[STATE.prologueStep];
         if (data) {
-            storyText.style.opacity = 0;
-            setTimeout(() => {
-                storyText.textContent = data.text.replace("{name}", STATE.username);
-                prologueImg.src = data.img;
-                storyText.style.opacity = 1;
-            }, 300);
-            STATE.currentStoryIdx++;
+            document.getElementById('img-prologue').src = data.image;
+            document.getElementById('text-prologue').textContent = data.text;
+            STATE.prologueStep++;
         } else {
-            this.switchScreen('prologue', 'app');
-            UI.addBubble(`Halo ${STATE.username}! Mari kita mulai pertunjukan besar ini!`, 'ai', '5.jpeg');
+            UI.switchScreen('screen-chat');
+            UI.addBubble(`Halo ${STATE.name}! Mari kita mulai sidangnya.`, 'ai', FURINA_DB.assets.NORMAL);
         }
     },
 
     handleChat() {
-        const input = document.getElementById('userInput');
-        const msg = input.value.trim();
-        if (!msg || STATE.isTyping) return;
+        const input = document.getElementById('chatInput');
+        const val = input.value.trim().toLowerCase();
+        if (!val || STATE.isProcessing) return;
 
-        UI.addBubble(msg, 'user');
-        input.value = '';
-        this.processResponse(msg.toLowerCase());
+        UI.addBubble(input.value, 'user');
+        input.value = "";
+        STATE.isProcessing = true;
+
+        // Simulasi Furina berpikir
+        setTimeout(() => {
+            this.generateResponse(val);
+            STATE.isProcessing = false;
+        }, 1000);
     },
 
-    processResponse(rawText) {
-        STATE.isTyping = true;
-        let selectedResponse = "";
-        let targetMood = "NORMAL";
+    generateResponse(input) {
+        let reply = "";
+        let mood = "NORMAL";
         let found = false;
 
-        // NLP Logic
-        for (const key in FURINA_DATA.knowledge) {
-            const entry = FURINA_DATA.knowledge[key];
-            if (entry.keywords.some(k => rawText.includes(k))) {
-                selectedResponse = entry.responses[Math.floor(Math.random() * entry.responses.length)];
-                targetMood = entry.mood;
+        // Cari di dataset
+        for (const category in FURINA_DB.responses) {
+            const item = FURINA_DB.responses[category];
+            if (item.keys.some(k => input.includes(k))) {
+                reply = item.text[Math.floor(Math.random() * item.text.length)];
+                mood = item.mood;
                 found = true;
-                if (key === 'toxic') STATE.trust -= 10;
-                if (key === 'flirt') STATE.trust += 5;
-                if (key === 'mystery') STATE.trust += 2;
+                
+                // Update Trust secara dinamis
+                if (category === 'toxic') STATE.trust -= 10;
+                if (category === 'praise') STATE.trust += 5;
                 break;
             }
         }
 
+        // Jika tidak ketemu, gunakan filosofi
         if (!found) {
-            selectedResponse = FURINA_DATA.philosophy[Math.floor(Math.random() * FURINA_DATA.philosophy.length)];
-            targetMood = "NORMAL";
+            reply = FURINA_DB.philosophy[Math.floor(Math.random() * FURINA_DB.philosophy.length)];
         }
 
-        // Delay agar manusiawi
-        setTimeout(() => {
-            STATE.mood = targetMood;
-            UI.updateMoodUI();
-            UI.addBubble(selectedResponse, 'ai', FURINA_DATA.moodAssets[targetMood]);
-            STATE.isTyping = false;
+        // Update Global State & UI
+        STATE.mood = mood;
+        UI.updateStatus();
+        UI.addBubble(reply, 'ai', FURINA_DB.assets[mood]);
 
-            if (STATE.trust >= 200) this.triggerEnding();
-        }, 1200);
-    },
-
-    triggerEnding() {
-        this.switchScreen('app', 'ending');
-        document.getElementById('flagValue').textContent = "FLAG{sana_minta_uang_ke_daus_buat_beli_nasi_padang}";
-    },
-
-    switchScreen(fromId, toId) {
-        const fromEl = document.getElementById(fromId);
-        const toEl = document.getElementById(toId);
-        if(fromEl) fromEl.classList.remove('active');
-        if(toEl) toEl.classList.add('active');
-    },
-
-    startClock() {
-        const update = () => {
-            const clockEl = document.getElementById('realtimeClock');
-            if(clockEl) {
-                const now = new Date();
-                clockEl.textContent = now.getHours().toString().padStart(2, '0') + ":" + 
-                                      now.getMinutes().toString().padStart(2, '0');
-            }
-        };
-        update();
-        setInterval(update, 1000);
+        // Cek Ending
+        if (STATE.trust >= 150) {
+            setTimeout(() => {
+                UI.switchScreen('screen-ending');
+                document.getElementById('flag-text').textContent = "FLAG{sana_minta_uang_ke_daus_buat_beli_nasi_padang}";
+            }, 2000);
+        }
     }
 };
 
-const UI = {
-    addBubble(text, type, imgUrl = null) {
-        const chatViewport = document.getElementById('chat');
-        if(!chatViewport) return;
-
-        const bubble = document.createElement('div');
-        bubble.className = `msg ${type} anim-up`;
-
-        if (type === 'ai' && imgUrl) {
-            const img = document.createElement('img');
-            img.src = imgUrl;
-            img.className = 'chat-img-bubble';
-            bubble.appendChild(img);
-        }
-
-        const p = document.createElement('p');
-        p.textContent = text;
-        bubble.appendChild(p);
-
-        chatViewport.appendChild(bubble);
-        chatViewport.scrollTo({ top: chatViewport.scrollHeight, behavior: 'smooth' });
-    },
-
-    updateMoodUI() {
-        document.body.className = `mood-${STATE.mood.toLowerCase()}`;
-        const moodLabel = document.getElementById('moodLabel');
-        const trustVal = document.getElementById('trustVal');
-        const miniAvatar = document.getElementById('miniAvatar');
-        
-        if(moodLabel) moodLabel.textContent = STATE.mood;
-        if(trustVal) trustVal.textContent = Math.max(0, STATE.trust);
-        if(miniAvatar) miniAvatar.src = FURINA_DATA.moodAssets[STATE.mood];
-    }
-};
-
-// Start System
-document.addEventListener('DOMContentLoaded', () => {
-    ENGINE.init();
-});
+// Jalankan sistem saat semua elemen siap
+document.addEventListener('DOMContentLoaded', () => ENGINE.init());
