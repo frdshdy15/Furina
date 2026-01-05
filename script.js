@@ -103,20 +103,20 @@ function resetInactivityTimer() {
 
     inactivityTimer = setTimeout(() => {
         const puitisBosan = [
-            "Kenapa diam? Apakah kau begitu terpesona hingga kehilangan kata-kata?",
-            "Keheningan ini mulai merusak tempo pertunjukanku. Katakan sesuatu!",
-            "Hmph, jangan biarkan sang Diva menunggu. Penonton tidak suka jeda yang terlalu lama!",
-            "Apakah naskahmu hilang? Atau kau hanyalah figuran yang lupa dialog?",
-            "Aku tidak suka diabaikan... Air di Fontaine saja terus mengalir, kenapa kau membeku?"
+            "Kenapa diam? Apakah kau begitu terpesona hingga kehilangan kata-kata? Atau kau sedang menyusun naskah pujian untukku?",
+            "Keheningan ini mulai merusak tempo pertunjukanku. Katakan sesuatu! Penonton tidak membayar tiket untuk melihat panggung kosong!",
+            "Hmph, jangan biarkan sang Diva menunggu. Penonton tidak suka jeda yang terlalu lama! Cepat ketik sesuatu sebelum aku panggil keamanan!",
+            "Apakah naskahmu hilang? Atau kau hanyalah figuran yang lupa dialog? Ayolah, improvisasi sedikit!",
+            "Aku tidak suka diabaikan... Air di Fontaine saja terus mengalir, kenapa kau membeku? Apa pesonaku membekukanmu?"
         ];
 
         const randomChat = puitisBosan[Math.floor(Math.random() * puitisBosan.length)];
         addMessage(randomChat, "ai");
 
-        // Furina benci diabaikan, trust turun sedikit
-        STATE.trust -= 1; 
+        // HARD MODE: Trust turun lebih cepat kalau dikacangin
+        STATE.trust -= 3; // Sebelumnya -1
         updateUI();
-    }, 30000); // 30 Detik
+    }, 30000); // UBAH JADI 30 DETIK
 }
 
 /* ===============================
