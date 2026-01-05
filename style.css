@@ -1,5 +1,5 @@
 /* ===================================================
-   GLOBAL RESET
+   RESET & ROOT
 =================================================== */
 * {
     margin: 0;
@@ -8,29 +8,65 @@
 }
 
 :root {
-    --bg-main: #0b0f1a;
-    --bg-card: #131a2a;
-    --accent: #6fd3ff;
-    --danger: #ff5c5c;
-    --soft: rgba(255,255,255,0.08);
     --text-main: #eaf6ff;
+    --soft: rgba(255,255,255,0.08);
+
+    --normal-bg: radial-gradient(circle at top, #0e1630, #05070f);
+    --warm-bg: radial-gradient(circle at top, #1a2b2b, #05070f);
+    --angry-bg: radial-gradient(circle at top, #3a0b0b, #05070f);
+
+    --accent-normal: #6fd3ff;
+    --accent-warm: #6fffd2;
+    --accent-angry: #ff5c5c;
 }
 
 body {
     font-family: 'Poppins', sans-serif;
-    background: radial-gradient(circle at top, #0e1630, #05070f);
-    color: var(--text-main);
     height: 100vh;
     overflow: hidden;
+    background: var(--normal-bg);
+    color: var(--text-main);
+    transition: background 0.6s ease;
 }
 
 /* ===================================================
-   MODAL (PERATURAN PANGGUNG)
+   MOOD BACKGROUND SWITCH
+=================================================== */
+body.mood-normal {
+    background: var(--normal-bg);
+}
+
+body.mood-warm {
+    background: var(--warm-bg);
+}
+
+body.mood-angry {
+    background: var(--angry-bg);
+}
+
+/* ===================================================
+   SHAKE EFFECT (ANGRY)
+=================================================== */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+    100% { transform: translateX(0); }
+}
+
+body.mood-angry .chat-wrapper {
+    animation: shake 0.35s linear;
+}
+
+/* ===================================================
+   MODAL
 =================================================== */
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(5, 8, 20, 0.9);
+    background: rgba(5, 8, 20, 0.92);
     backdrop-filter: blur(10px);
     display: none;
     align-items: center;
@@ -46,9 +82,9 @@ body {
     width: 92%;
     max-width: 420px;
     background: linear-gradient(180deg, #121b33, #0b1224);
-    border-radius: 20px;
+    border-radius: 22px;
     padding: 22px;
-    box-shadow: 0 0 60px rgba(111,211,255,0.15);
+    box-shadow: 0 0 60px rgba(0,0,0,0.6);
     animation: pop 0.4s ease;
 }
 
@@ -57,181 +93,151 @@ body {
     to { transform: scale(1); opacity: 1; }
 }
 
-.modal-header {
-    text-align: center;
-    margin-bottom: 14px;
-}
-
 .modal-avatar {
     width: 110px;
     height: 110px;
-    object-fit: cover;
     border-radius: 50%;
-    border: 3px solid var(--accent);
-    box-shadow: 0 0 25px rgba(111,211,255,0.6);
-    margin-bottom: 10px;
-}
-
-.font-cinzel {
-    font-family: 'Cinzel', serif;
-    letter-spacing: 2px;
-}
-
-.rules-list {
-    list-style: none;
-    margin: 14px 0;
-}
-
-.rules-list li {
-    padding: 10px;
-    border-radius: 12px;
-    margin-bottom: 8px;
-    background: var(--soft);
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.rules-list i {
-    color: var(--accent);
-}
-
-#usernameInput {
-    width: 100%;
-    padding: 12px;
-    margin-top: 12px;
-    border-radius: 12px;
-    border: none;
-    outline: none;
-    background: #0b132b;
-    color: white;
-}
-
-.btn-primary {
-    width: 100%;
-    margin-top: 16px;
-    padding: 14px;
-    border-radius: 16px;
-    border: none;
-    background: linear-gradient(135deg, #6fd3ff, #4aa3ff);
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.btn-primary:hover {
-    transform: scale(1.03);
-    box-shadow: 0 0 25px rgba(111,211,255,0.6);
+    object-fit: cover;
+    margin: 0 auto 12px;
+    display: block;
+    box-shadow: 0 0 30px rgba(255,255,255,0.4);
 }
 
 /* ===================================================
-   APP LAYOUT
+   FLOATING STATUS BAR (ANTI KETIMBUN)
+=================================================== */
+.floating-status {
+    position: fixed;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 28px);
+    max-width: 520px;
+    padding: 12px 16px;
+    background: rgba(10,15,35,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+}
+
+.status-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.moon-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ffffff, #b5dfff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 0 18px rgba(255,255,255,0.6);
+}
+
+.status-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.status-mood {
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.status-clock {
+    font-size: 11px;
+    opacity: 0.7;
+}
+
+.status-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ===================================================
+   APP & CHAT CONTAINER
 =================================================== */
 .app-container {
     height: 100vh;
+    padding-top: 84px; /* ruang floating bar */
     display: flex;
     flex-direction: column;
 }
 
-/* ===================================================
-   HEADER
-=================================================== */
-.main-header {
-    padding: 14px;
-    background: rgba(10,15,35,0.9);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--soft);
-}
-
-.header-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.avatar-box {
-    position: relative;
-}
-
-#mini-avatar {
-    width: 52px;
-    height: 52px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 2px solid var(--accent);
-}
-
-.status-dot {
-    position: absolute;
-    bottom: 2px;
-    right: 2px;
-    width: 12px;
-    height: 12px;
-    background: #00ff88;
-    border-radius: 50%;
-    border: 2px solid #000;
-}
-
-.user-info h1 {
-    font-size: 16px;
-    letter-spacing: 1px;
-}
-
-.user-info small {
-    font-size: 12px;
-    opacity: 0.7;
-}
-
-.trust-badge {
-    margin-left: auto;
-    background: var(--soft);
-    padding: 8px 12px;
-    border-radius: 20px;
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-/* ===================================================
-   CHAT
-=================================================== */
-.chat-viewport {
+.chat-wrapper {
     flex: 1;
+    padding: 14px;
+}
+
+.chat-box {
+    height: 100%;
+    background: rgba(10,15,35,0.6);
+    border-radius: 22px;
     padding: 16px;
     overflow-y: auto;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.6);
 }
 
+/* ===================================================
+   CHAT BUBBLE
+=================================================== */
 .msg {
-    max-width: 80%;
+    display: flex;
     margin-bottom: 14px;
-    padding: 12px;
-    border-radius: 16px;
     animation: fadeUp 0.3s ease;
 }
 
 @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* AI MESSAGE */
+.msg.ai {
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.msg.ai .orb {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fff, #9fd3ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 16px rgba(255,255,255,0.6);
+    flex-shrink: 0;
+}
+
+.msg.ai .bubble {
+    background: #121b33;
+    padding: 12px 14px;
+    border-radius: 16px;
+    max-width: 75%;
+}
+
+/* USER MESSAGE */
 .msg.user {
-    margin-left: auto;
+    justify-content: flex-end;
+}
+
+.msg.user .bubble {
     background: linear-gradient(135deg, #4aa3ff, #6fd3ff);
     color: #000;
-}
-
-.msg.ai {
-    background: #121b33;
-    border: 1px solid var(--soft);
-}
-
-.chat-img-bubble {
-    width: 90px;
-    height: 90px;
-    object-fit: cover;
-    border-radius: 12px;
-    margin-bottom: 6px;
-    box-shadow: 0 0 20px rgba(111,211,255,0.3);
+    padding: 12px 14px;
+    border-radius: 16px;
+    max-width: 75%;
 }
 
 /* ===================================================
@@ -240,7 +246,7 @@ body {
 .input-section {
     padding: 12px;
     background: rgba(10,15,35,0.9);
-    border-top: 1px solid var(--soft);
+    backdrop-filter: blur(8px);
 }
 
 .input-wrapper {
@@ -251,7 +257,7 @@ body {
 #userInput {
     flex: 1;
     padding: 12px;
-    border-radius: 14px;
+    border-radius: 16px;
     border: none;
     outline: none;
     background: #0b132b;
@@ -260,26 +266,17 @@ body {
 
 #sendBtn {
     width: 48px;
-    border-radius: 14px;
+    border-radius: 16px;
     border: none;
     background: linear-gradient(135deg, #6fd3ff, #4aa3ff);
-    cursor: pointer;
-}
-
-.credits {
-    text-align: center;
-    font-size: 11px;
-    opacity: 0.5;
-    margin-top: 6px;
 }
 
 /* ===================================================
-   MOOD EFFECT
+   CREDITS
 =================================================== */
-body.mood-angry {
-    background: radial-gradient(circle at top, #2a0b0b, #05070f);
-}
-
-body.mood-warm {
-    background: radial-gradient(circle at top, #1a2b2b, #05070f);
+.credits {
+    margin-top: 6px;
+    text-align: center;
+    font-size: 11px;
+    opacity: 0.5;
 }
