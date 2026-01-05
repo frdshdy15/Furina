@@ -2308,7 +2308,7 @@ const DATASET = [
         mood: "warm", trust: +20
     }
 
-
+]
 
     /* -------------------------------------------------------
        SPACE KOSONG: PASTE RIBUAN BARIS DATASET KAMU DI SINI
