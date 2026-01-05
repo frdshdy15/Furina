@@ -1,5 +1,5 @@
 /* ============================================================
-   [1] VARIABLES & THEMES
+   [1] GOOGLE FONTS & VARIABLES
    ============================================================ */
 :root {
     --primary: #00d2ff;
@@ -7,6 +7,7 @@
     --glass: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);
     --text: #e0f7ff;
+    --gold: #ffd700;
     --transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -14,41 +15,44 @@ body.mood-angry { --primary: #ff4b2b; }
 body.mood-warm { --primary: #ff80ab; }
 
 /* ============================================================
-   [2] CORE RESET & LAYOUT
+   [2] CORE RESET
    ============================================================ */
 * {
     box-sizing: border-box;
-    margin: 0; padding: 0;
+    margin: 0;
+    padding: 0;
     -webkit-tap-highlight-color: transparent;
 }
 
 body, html {
-    width: 100%; height: 100%;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
     background: var(--secondary);
     font-family: 'Poppins', sans-serif;
     color: var(--text);
 }
 
-.app-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    width: 100%;
+.vignette {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.7) 150%);
+    pointer-events: none;
+    z-index: 5;
 }
 
 /* ============================================================
-   [3] MODAL WINDOW (Aturan & Victory)
+   [3] MODAL SYSTEM (Jendela Aturan & Menang)
    ============================================================ */
 .modal-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(10px);
-    display: none;
+    display: none; 
     align-items: center;
     justify-content: center;
-    z-index: 999;
+    z-index: 100;
     padding: 20px;
 }
 
@@ -62,52 +66,60 @@ body, html {
     max-width: 350px;
     padding: 25px;
     text-align: center;
-    animation: zoomIn 0.3s ease;
-}
-
-.modal-avatar {
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    border: 2px solid var(--primary);
-    margin-bottom: 15px;
-    object-fit: cover;
+    animation: fadeIn 0.3s ease;
 }
 
 /* ============================================================
-   [4] CHAT INTERFACE
+   [4] CHAT INTERFACE (The Masterpiece)
    ============================================================ */
-.main-header {
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 10px;
     background: var(--glass);
     backdrop-filter: blur(15px);
     border-bottom: 1px solid var(--glass-border);
-    padding: 15px;
 }
 
-.header-content { display: flex; align-items: center; gap: 12px; }
-.avatar-box img { 
-    width: 45px; height: 45px; 
-    border-radius: 50%; border: 2px solid var(--primary); 
+.user-meta { display: flex; align-items: center; gap: 12px; }
+.avatar-mini { 
+    width: 45px; 
+    height: 45px; 
+    border-radius: 50%; 
+    border: 2px solid var(--primary);
     object-fit: cover;
 }
 
-.chat-viewport {
+.chat-container {
     flex: 1;
     overflow-y: auto;
-    padding: 20px 15px;
+    padding: 20px 10px;
     display: flex;
     flex-direction: column;
     gap: 15px;
+    scrollbar-width: none;
 }
+.chat-container::-webkit-scrollbar { display: none; }
 
-/* FIX: UKURAN GAMBAR DI DALAM CHAT */
+/* ------------------------------------------------------------
+   FIX: FOTO DI DALAM BUBBLE CHAT (BULAT & RAPI)
+   ------------------------------------------------------------ */
 .chat-img-bubble {
-    width: 120px; /* Kunci ukuran lebar */
-    height: 120px; /* Kunci ukuran tinggi */
-    border-radius: 12px;
-    object-fit: cover; /* Biar nggak gepeng */
-    display: block;
+    width: 80px;      /* Ukuran pas di mobile */
+    height: 80px;     /* Harus sama dengan width agar bulat */
+    border-radius: 50%; /* Membuat jadi bulat sempurna */
+    object-fit: cover;  /* Foto tidak gepeng */
     margin-bottom: 8px;
     border: 2px solid var(--primary);
+    display: block;
+    box-shadow: 0 0 10px var(--primary);
 }
 
 .msg {
@@ -115,7 +127,8 @@ body, html {
     padding: 12px 16px;
     border-radius: 18px;
     font-size: 0.95rem;
-    animation: slideUp 0.3s ease;
+    position: relative;
+    animation: slideUp 0.4s ease forwards;
 }
 
 .msg.ai {
@@ -130,17 +143,19 @@ body, html {
     background: var(--primary);
     color: var(--secondary);
     border-bottom-right-radius: 2px;
+    font-weight: 500;
 }
 
 /* ============================================================
    [5] INPUT BAR
    ============================================================ */
-.input-section {
+.chat-input-bar {
     padding: 15px;
     background: var(--secondary);
+    border-top: 1px solid var(--glass-border);
 }
 
-.input-wrapper {
+.input-group {
     display: flex;
     gap: 10px;
     background: var(--glass);
@@ -149,28 +164,30 @@ body, html {
     border: 1px solid var(--glass-border);
 }
 
-.input-wrapper input {
+.input-group input {
     flex: 1;
     background: none;
     border: none;
     color: white;
     outline: none;
+    font-size: 0.95rem;
 }
 
-#sendBtn {
-    width: 40px; height: 40px;
+.input-group button {
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     background: var(--primary);
-    border: none; color: var(--secondary);
+    border: none;
+    color: var(--secondary);
 }
 
 /* ============================================================
    [6] ANIMATIONS
    ============================================================ */
-@keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Victory Love Animation */
 .love-animation { font-size: 3rem; animation: pulse 1.2s infinite; }
 @keyframes pulse {
     0% { transform: scale(1); }
