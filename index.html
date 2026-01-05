@@ -3,65 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Furina: The Final Judgment</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    <title>Furina: The Diva's Stage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cinzel:wght@700&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="mood-normal">
 
-    <div id="modal-start" class="modal-overlay active">
-        <div class="modal-window">
+    <div id="loading-screen">
+        <div class="loader-content">
+            <div class="diva-loader"></div>
+            <h2 class="font-cinzel">Fontaine's Grand Opera</h2>
+            <div class="progress-bar"><div class="progress-fill"></div></div>
+        </div>
+    </div>
+
+    <div id="modal-start" class="modal-overlay">
+        <div class="modal-window entrance-anim">
             <div class="modal-header">
-                <img src="5.jpeg" alt="Furina" class="modal-avatar glow-blue">
-                <h2 class="font-cinzel">PERATURAN PANGGUNG</h2>
+                <div class="avatar-container">
+                    <img src="5.jpeg" alt="Furina" class="modal-avatar glow-blue">
+                    <div class="crown-icon">👑</div>
+                </div>
+                <h2 class="font-cinzel">Panggung Keadilan</h2>
             </div>
             <div class="modal-body">
-                <ul class="rules-list">
-                    <li><i class="fas fa-star"></i> Furina adalah bintang utama.</li>
-                    <li><i class="fas fa-shield-alt"></i> Dilarang melakukan Copy-Paste.</li>
-                    <li><i class="fas fa-heart"></i> Jaga Trust agar tidak di-Judgement.</li>
-                </ul>
-                <input type="text" id="usernameInput" placeholder="Masukkan namamu, figuran..." autocomplete="off" required>
+                <p class="poetic-text">"Selamat datang di panggung sandiwara terbaik di Teyvat. Sebelum tirai diangkat, perkenalkan dirimu, wahai penonton."</p>
+                <div class="rules-container">
+                    <span><i class="fas fa-feather-alt"></i> Bicara dengan Elegan</span>
+                    <span><i class="fas fa-heart"></i> Jaga Kepercayaan Diva</span>
+                    <span><i class="fas fa-gavel"></i> Patuhi Aturan Panggung</span>
+                </div>
+                <input type="text" id="usernameInput" placeholder="Sebutkan namamu..." autocomplete="off">
             </div>
             <div class="modal-footer">
-                <button id="btn-start" class="btn-primary">MULAI PERTUNJUKAN</button>
+                <button id="btn-start" class="btn-action">ANGKAT TIRAI</button>
             </div>
         </div>
     </div>
 
     <div id="modal-victory" class="modal-overlay">
-        <div class="modal-window victory-style glow-gold">
-            <div class="modal-header">
-                <div class="love-animation">❤️</div>
-                <h2 class="font-cinzel">SELAMAT!</h2>
+        <div class="modal-window victory-style scale-up">
+            <div class="sparkles">✨</div>
+            <h2 class="font-cinzel">Bintang Utama</h2>
+            <p>Kau telah mendapatkan kunci menuju hati sang Diva.</p>
+            <div class="flag-box">
+                <code id="flag-text">FLAG{FURINA_LIGHT_DIVA_77}</code>
             </div>
-            <div class="modal-body">
-                <p>Kau telah memenangkan hati sang Diva!</p>
-                <div class="flag-box">
-                    <code id="flag-text">FLAG{FURINA_LOVES_YOU}</code>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button onclick="location.reload()" class="btn-primary">MAIN LAGI</button>
-            </div>
+            <button onclick="location.reload()" class="btn-action">ULANGI PERTUNJUKAN</button>
         </div>
     </div>
 
     <div class="app-container">
         <header class="main-header">
-            <div class="header-content">
-                <div class="avatar-box">
-                    <img src="5.jpeg" id="mini-avatar" alt="Furina" class="glow-soft">
-                    <div class="status-dot"></div>
+            <div class="glass-header">
+                <div class="avatar-wrapper">
+                    <img src="5.jpeg" id="mini-avatar" alt="Furina">
+                    <div id="status-glow" class="status-indicator"></div>
                 </div>
-                <div class="user-info">
-                    <h1 id="mood-label">THEATRICAL</h1>
-                    <small id="realtime-clock">00:00:00</small>
+                <div class="identity">
+                    <h1 class="font-cinzel" id="mood-label">Grand Diva</h1>
+                    <div class="clock-box">
+                        <i class="far fa-clock"></i> <span id="realtime-clock">00:00:00</span>
+                    </div>
                 </div>
-                <div class="trust-badge">
-                    <i class="fas fa-heart"></i>
-                    <span id="trust-val">20</span>
+                <div class="stats">
+                    <div class="trust-meter">
+                        <i class="fas fa-heart"></i>
+                        <span id="trust-val">20</span>
+                    </div>
                 </div>
             </div>
         </header>
@@ -70,14 +80,16 @@
             </main>
 
         <footer class="input-section">
-            <div class="input-wrapper">
-                <input type="text" id="userInput" placeholder="Ketik pesan untuk sang Diva..." autocomplete="off">
+            <div class="input-container">
+                <input type="text" id="userInput" placeholder="Tuliskan naskahmu..." autocomplete="off">
                 <button id="sendBtn">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
-            <div class="credits">
-                Dev: <b>Frdshdy</b> | @frdshdy_15
+            <div class="branding">
+                <span>By <b>Frdshdy</b></span>
+                <span class="divider">|</span>
+                <span>Version 2.0 Light</span>
             </div>
         </footer>
     </div>
