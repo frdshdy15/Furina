@@ -1,116 +1,78 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Furina — Trial of Trust</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Furina — Trial of Trust</title>
 
-    <!-- FONT -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <!-- STYLE -->
-    <link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body class="mood-normal">
 
 <!-- ===============================
-     MODAL START
+ MODAL START
 ================================ -->
 <div id="modal-start" class="modal-overlay active">
-    <div class="modal-window">
-        <div class="modal-header">
-            <img src="5.jpeg" class="modal-avatar" alt="Furina">
-            <h2 class="font-cinzel">PERATURAN PANGGUNG</h2>
-        </div>
-
-        <div class="modal-body">
-            <ul class="rules-list">
-                <li><i class="fas fa-star"></i> Furina adalah pusat segalanya.</li>
-                <li><i class="fas fa-shield-alt"></i> Spam & copy-paste terdeteksi.</li>
-                <li><i class="fas fa-scale-balanced"></i> Trust menentukan nasibmu.</li>
-            </ul>
-
-            <!-- WAJIB: native validation -->
-            <input
-                type="text"
-                id="usernameInput"
-                placeholder="Masukkan namamu…"
-                required
-                minlength="1"
-                autocomplete="off">
-        </div>
-
-        <div class="modal-footer">
-            <button id="btn-start" class="btn-primary">MULAI PERTUNJUKAN</button>
-        </div>
-    </div>
+  <div class="modal-window">
+    <img src="5.jpeg" class="modal-avatar">
+    <h2 class="font-cinzel">PERATURAN PANGGUNG</h2>
+    <ul class="rules-list">
+      <li>Furina adalah pusat segalanya</li>
+      <li>Spam & cheat terdeteksi</li>
+      <li>Trust menentukan nasibmu</li>
+    </ul>
+    <input id="usernameInput" placeholder="Namamu..." required>
+    <button id="btn-start">MULAI</button>
+  </div>
 </div>
 
 <!-- ===============================
-     FLOATING STATUS BAR (NGAMBANG)
+ MODAL VICTORY (WAJIB)
+================================ -->
+<div id="modal-victory" class="modal-overlay">
+  <div class="modal-window">
+    <h2 class="font-cinzel">AKHIR PERTUNJUKAN</h2>
+    <p>Furina memberimu sesuatu:</p>
+    <code style="display:block;margin-top:12px;font-size:14px;"></code>
+    <button onclick="location.reload()">MAIN ULANG</button>
+  </div>
+</div>
+
+<!-- ===============================
+ FLOATING STATUS
 ================================ -->
 <div class="floating-status">
-
-    <div class="status-left">
-        <div class="moon-avatar">🌙</div>
-        <div class="status-text">
-            <div id="mood-label" class="status-mood">NORMAL</div>
-            <div id="realtime-clock" class="status-clock">00:00:00</div>
-        </div>
+  <div class="status-left">
+    <div class="moon-avatar">🌙</div>
+    <div>
+      <div id="mood-label">NORMAL</div>
+      <div id="realtime-clock">00:00</div>
     </div>
-
-    <div class="status-right">
-        <i class="fas fa-heart"></i>
-        <span id="trust-val">20</span>
-    </div>
-
+  </div>
+  <div class="status-right">
+    ❤️ <span id="trust-val">20</span>
+  </div>
 </div>
 
 <!-- ===============================
-     MAIN APP
+ APP
 ================================ -->
 <div class="app-container">
 
-    <!-- CHAT WRAPPER (SCROLL TERKUNCI) -->
-    <div class="chat-wrapper">
+<div class="chat-wrapper">
+<main id="chat-box" class="chat-box"></main>
+</div>
 
-        <!-- CHAT BOX -->
-        <main id="chat-box" class="chat-box">
-
-            <!-- CONTOH STRUKTUR PESAN AI -->
-            <!--
-            <div class="msg ai">
-                <div class="orb">🌙</div>
-                <div class="bubble">
-                    <p>Hmph… akhirnya kau datang.</p>
-                </div>
-            </div>
-            -->
-
-        </main>
-
-    </div>
-
-    <!-- INPUT -->
-    <footer class="input-section">
-        <div class="input-wrapper">
-            <input
-                type="text"
-                id="userInput"
-                placeholder="Ucapkan sesuatu…"
-                autocomplete="off">
-
-            <button id="sendBtn">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </div>
-
-        <div class="credits">
-            Dev: <b>Frdshdy</b> | Trial System v1
-        </div>
-    </footer>
+<footer class="input-section">
+  <div class="input-wrapper">
+    <input id="userInput" placeholder="Ucapkan sesuatu…">
+    <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+  </div>
+  <div class="credits">Dev: <b>Frdshdy</b></div>
+</footer>
 
 </div>
 
