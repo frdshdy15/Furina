@@ -736,24 +736,16 @@ function updateUI() {
     // --- FITUR DRAMA: GETARAN LAYAR ---
     if (STATE.mood === "angry") {
         document.body.classList.add("shake-effect");
-        // Tombol kirim jadi miring-miring tanda dia emosi
         document.getElementById("sendBtn").style.transform = `rotate(${Math.random() * 20 - 10}deg)`;
     } else {
         document.body.classList.remove("shake-effect");
         document.getElementById("sendBtn").style.transform = "rotate(0deg)";
     }
-}
-
-
-    
-    // Update warna background sesuai mood
-    document.body.className = `mood-${STATE.mood}`;
-}
+} // <--- Pembuka dan penutup sekarang sudah pas
 
 function checkEnding() {
     if (STATE.ending) return;
 
-    // VICTORY CONDITION
     if (STATE.trust >= 100) {
         STATE.ending = "VICTORY";
         document.getElementById("flag-text").textContent = "FLAG{sana_minta_uang_ke_daus_buat_beli_nasi_padang}";
@@ -761,7 +753,6 @@ function checkEnding() {
             document.getElementById("modal-victory").classList.add("active");
         }, 1200);
     } 
-    // GAME OVER CONDITION
     else if (STATE.trust <= -50) {
         STATE.ending = "GAMEOVER";
         setTimeout(() => {
@@ -777,21 +768,19 @@ function sendMessage() {
     const msg = input.value.trim();
     if (!msg) return;
 
-    // User Message
     addMessage(msg, "user");
     input.value = "";
 
-    // AI Response Logic
     const analysis = analyze(msg);
     const reply = decide(analysis);
 
-    // Furina butuh waktu untuk "berakting"
     setTimeout(() => {
         addMessage(reply, "ai");
         updateUI();
         checkEnding();
     }, 800 + Math.random() * 1000);
 }
+
 
 /* ===============================
    INITIALIZATION & EVENTS
