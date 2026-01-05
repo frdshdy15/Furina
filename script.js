@@ -229,20 +229,7 @@ const BRAIN = {
             }
         }
 
-        // 7. Pengecekan input pendek
-        if (sentiment === 0 && intent === "GENERAL" && text.length < 5) {
-            return {
-                reply: "Hanya itu? Naskahmu bahkan lebih pendek dari durasi tepuk tangan penonton yang bosan.",
-                mood: "normal", trust: -1
-            };
-        }
-
-        if (text.length < 3) {
-            return {
-                reply: "Hanya satu atau dua kata? Kau pikir aku ini mesin kasir? Berikan aku dialog yang layak untuk seorang Diva!",
-                mood: "normal", trust: -2
-            };
-        }
+        
 
         // 8. Cek pengulangan topik
         if (this.context.topicHistory.length > 5 && new Set(this.context.topicHistory.slice(-3)).size === 1) {
@@ -2327,17 +2314,9 @@ function decide(analysis) {
         return "Berhenti mengulang adegan yang sama! Kau merusak tempo pertunjukan ini!";
     }
 
-    // 2. Jalankan Proses Machine Learning (BRAIN)
-    const brainResult = BRAIN.process(analysis);
-
-    if (brainResult) {
-        // STATE.trust SUDAH diupdate di dalam BRAIN.process, 
-        // jadi kita hanya perlu update Mood dan mengembalikan Reply puitis.
-        STATE.mood = brainResult.mood;
-        return poeticEnhancer(brainResult.reply);
-    }
-
-    // 3. Jika BRAIN tidak menemukan pola (Null), cek DATASET Manual
+    // --- UBAHAN: PINDAHKAN PENGECEKAN DATASET KE ATAS ---
+    
+    // 2. Cek DATASET DULU (Prioritas Utama)
     for (const d of DATASET) {
         if (d.match && d.match.test(analysis)) {
             if (d.trust) STATE.trust += d.trust;
@@ -2347,6 +2326,14 @@ function decide(analysis) {
             const randomReply = d.reply[Math.floor(Math.random() * d.reply.length)];
             return poeticEnhancer(randomReply);
         }
+    }
+
+    // 3. Baru Cek Logic BRAIN (Jika tidak ada di dataset)
+    const brainResult = BRAIN.process(analysis);
+
+    if (brainResult) {
+        STATE.mood = brainResult.mood;
+        return poeticEnhancer(brainResult.reply);
     }
 
     // 4. Fallback jika semua buntu
