@@ -7,6 +7,7 @@ const STATE = {
     username: null,
     trust: 20,
     mood: "normal",
+rank: "Figuran", // Fitur Baru: Pangkat
     ending: null,
     lastInput: "",
     repeat: 0,
@@ -692,7 +693,10 @@ function decide(analysis) {
 function addMessage(text, who) {
     const box = document.getElementById("chat-box");
     const div = document.createElement("div");
-    div.className = `msg ${who}`;
+    
+    // Logika: Chat AI akan goyang (dizzy) kalau mood Furina sedang marah
+    const extraClass = (who === 'ai' && STATE.mood === 'angry') ? 'dizzy-chat' : '';
+    div.className = `msg ${who} ${extraClass}`;
 
     if (who === 'ai') {
         div.innerHTML = `
@@ -705,22 +709,42 @@ function addMessage(text, who) {
 
     box.appendChild(div);
     
-    // Reset timer setiap kali ada pesan baru (user atau ai)
     resetInactivityTimer();
 
-    // Auto scroll halus
+    // Auto scroll ke bawah
     setTimeout(() => {
         box.scrollTo({ top: box.scrollHeight, behavior: 'smooth' });
     }, 50);
 }
 
+
 function updateUI() {
-    // Kunci nilai trust antara -50 dan 100
     STATE.trust = Math.max(-50, Math.min(100, STATE.trust));
     
+    // --- FITUR PANGKAT ---
+    if(STATE.trust < 0) STATE.rank = "Terdakwa";
+    else if(STATE.trust < 40) STATE.rank = "Figuran";
+    else if(STATE.trust < 80) STATE.rank = "Aktor Utama";
+    else STATE.rank = "Sutradara Kesayangan";
+
+    // Update Tampilan Header
     document.getElementById("trust-val").textContent = STATE.trust;
-    document.getElementById("mood-label").textContent = STATE.mood.toUpperCase();
+    document.getElementById("mood-label").textContent = `${STATE.mood.toUpperCase()} | ${STATE.rank}`;
     document.getElementById("mini-avatar").src = ASSETS[STATE.mood];
+    document.body.className = `mood-${STATE.mood}`;
+
+    // --- FITUR DRAMA: GETARAN LAYAR ---
+    if (STATE.mood === "angry") {
+        document.body.classList.add("shake-effect");
+        // Tombol kirim jadi miring-miring tanda dia emosi
+        document.getElementById("sendBtn").style.transform = `rotate(${Math.random() * 20 - 10}deg)`;
+    } else {
+        document.body.classList.remove("shake-effect");
+        document.getElementById("sendBtn").style.transform = "rotate(0deg)";
+    }
+}
+
+
     
     // Update warna background sesuai mood
     document.body.className = `mood-${STATE.mood}`;
