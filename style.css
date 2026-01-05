@@ -11,6 +11,7 @@
     --transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* Background dinamis berdasarkan mood */
 body.mood-angry { --primary: #ff4b2b; }
 body.mood-warm { --primary: #ff80ab; }
 
@@ -21,18 +22,19 @@ body.mood-warm { --primary: #ff80ab; }
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: transparent; /* Hapus shadow saat klik di HP */
 }
 
 body, html {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow: hidden; /* Anti-goyang */
     background: var(--secondary);
     font-family: 'Poppins', sans-serif;
     color: var(--text);
 }
 
+/* Efek Vignette (Glow di pojok layar) */
 .vignette {
     position: fixed;
     inset: 0;
@@ -42,42 +44,103 @@ body, html {
 }
 
 /* ============================================================
-   [3] MODAL SYSTEM (Jendela Aturan & Menang)
+   [3] LAYERED SCREEN SYSTEM
    ============================================================ */
-.modal-overlay {
-    position: fixed;
+.screen {
+    position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(10px);
-    display: none; 
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
+    width: 100%;
+    height: 100%;
+    display: none;
     padding: 20px;
+    z-index: 10;
+    flex-direction: column;
 }
 
-.modal-overlay.active { display: flex; }
+.screen.active {
+    display: flex;
+    animation: fadeIn 0.6s ease;
+}
 
-.modal-window {
-    background: var(--glass);
-    border: 1px solid var(--primary);
-    border-radius: 20px;
+.container {
     width: 100%;
-    max-width: 350px;
-    padding: 25px;
-    text-align: center;
-    animation: fadeIn 0.3s ease;
+    max-width: 450px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* ============================================================
-   [4] CHAT INTERFACE (The Masterpiece)
+   [4] WELCOME & STORY UI
    ============================================================ */
-.app-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
+.font-cinzel {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 2px;
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary);
+    margin-top: 15px;
 }
 
+.avatar-frame {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid var(--primary);
+    padding: 5px;
+    box-shadow: 0 0 25px var(--primary);
+    background: var(--secondary);
+}
+
+.img-main, .story-img-box img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.form-card, .story-card, .ending-card {
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    padding: 25px;
+    border-radius: 20px;
+    width: 100%;
+    margin-top: 30px;
+}
+
+/* Button & Input */
+.btn-main {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: var(--primary);
+    color: var(--secondary);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0, 210, 255, 0.3);
+    transition: var(--transition);
+}
+
+.btn-main:active { transform: scale(0.95); }
+
+#usernameInput {
+    width: 100%;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--primary);
+    padding: 14px;
+    border-radius: 12px;
+    color: white;
+    margin-bottom: 15px;
+    outline: none;
+}
+
+/* ============================================================
+   [5] CHAT INTERFACE (The Masterpiece)
+   ============================================================ */
 .chat-header {
     display: flex;
     justify-content: space-between;
@@ -89,13 +152,7 @@ body, html {
 }
 
 .user-meta { display: flex; align-items: center; gap: 12px; }
-.avatar-mini { 
-    width: 45px; 
-    height: 45px; 
-    border-radius: 50%; 
-    border: 2px solid var(--primary);
-    object-fit: cover;
-}
+.avatar-mini { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); }
 
 .chat-container {
     flex: 1;
@@ -104,23 +161,10 @@ body, html {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    /* Custom Scrollbar */
     scrollbar-width: none;
 }
 .chat-container::-webkit-scrollbar { display: none; }
-
-/* ------------------------------------------------------------
-   FIX: FOTO DI DALAM BUBBLE CHAT (BULAT & RAPI)
-   ------------------------------------------------------------ */
-.chat-img-bubble {
-    width: 80px;      /* Ukuran pas di mobile */
-    height: 80px;     /* Harus sama dengan width agar bulat */
-    border-radius: 50%; /* Membuat jadi bulat sempurna */
-    object-fit: cover;  /* Foto tidak gepeng */
-    margin-bottom: 8px;
-    border: 2px solid var(--primary);
-    display: block;
-    box-shadow: 0 0 10px var(--primary);
-}
 
 .msg {
     max-width: 80%;
@@ -146,9 +190,6 @@ body, html {
     font-weight: 500;
 }
 
-/* ============================================================
-   [5] INPUT BAR
-   ============================================================ */
 .chat-input-bar {
     padding: 15px;
     background: var(--secondary);
@@ -188,9 +229,20 @@ body, html {
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-.love-animation { font-size: 3rem; animation: pulse 1.2s infinite; }
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--glass);
+    border-top: 5px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   [7] MOBILE SAFE AREAS
+   ============================================================ */
+@media (max-height: 600px) {
+    .avatar-frame { width: 80px; height: 80px; }
+    h1 { font-size: 1.2rem; }
 }
