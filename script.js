@@ -1,193 +1,217 @@
 "use strict";
 
 /**
- * FURINA SENTIENCE ENGINE (NEURAL-LINK MOCKUP)
- * Menggunakan Probabilitas Kontekstual & Weighted Random
- * Tanpa API - Machine Learning Logic
+ * FURINA DEUS EX MACHINA ENGINE V2
+ * Kepribadian: Kompleks, Cerdas, Bisa Berbohong, Penantang.
  */
 
 const STATE = {
     username: "Traveler",
-    trust: 50,
-    mood: "THEATRICAL",
-    memory: [], 
-    isNight: false
+    trust: 20,
+    mood: "NORMAL",
+    stage: "GREETING", // GREETING, RIDDLE, JUDGMENT, FINAL
+    interactionCount: 0,
+    inventory: [],
+    failedAttempts: 0
 };
 
-// --- [1] NEURAL DATASET (The Knowledge Base) ---
-const BRAIN_MODEL = {
-    // Kumpulan data mentah yang akan diproses oleh "Neural Engine"
-    corpus: {
-        "GREETING": {
-            weight: 1,
-            patterns: ["halo", "hai", "pagi", "siang", "malam", "oi", "permisi", "hey"],
-            nodes: [
-                "Halo! Pas sekali kau datang ke panggungku.",
-                "Kehadiranmu tepat waktu, simfoni baru saja akan dimulai.",
-                "Oh, figuran favoritku muncul juga. Apa harimu menyenangkan?"
-            ]
-        },
-        "PHYSICAL": {
-            weight: 2,
-            patterns: ["makan", "lapar", "haus", "minum", "mam", "kenyang", "macaron", "teh"],
-            nodes: [
-                "Macaron blueberry adalah satu-satunya alasan raga ini tetap bertahan dalam drama dunia. Kau sudah makan?",
-                "Seorang bintang tidak boleh gemetar karena lapar. Aku baru saja menikmati teh kembang sepatu.",
-                "Makan? Aku hanya butuh apresiasi penonton untuk hidup! Tapi sepotong kue tadi cukup enak."
-            ]
-        },
-        "CONDITION": {
-            weight: 2,
-            patterns: ["kabar", "lagi apa", "sedang apa", "gimana", "sehat", "apa kabar"],
-            nodes: [
-                "Sedang merenungi naskah untuk hari esok. Dunia ini butuh lebih banyak drama!",
-                "Kabarku luar biasa, secerah langit Fontaine hari ini.",
-                "Menunggumu menyapa, meskipun aku pura-pura sibuk dengan urusan pengadilan."
-            ]
-        },
-        "EMPATHY": {
-            weight: 3,
-            patterns: ["sedih", "capek", "lelah", "galau", "nangis", "sakit", "sendiri", "kesepian"],
-            nodes: [
-                "Jangan menangis sendirian. Panggung ini cukup luas untuk kita berdua berbagi beban.",
-                "Terkadang bahkan seorang bintang butuh waktu untuk redup sejenak. Aku mendengarkanmu.",
-                "Beban itu... biarkan aku membaginya sedikit bersamamu melalui obrolan ini. Jangan menyerah."
-            ]
-        },
-        "TOXIC": {
-            weight: 5,
-            patterns: ["anjing", "bego", "tolol", "goblok", "jelek", "babi", "mati", "jahat"],
-            nodes: [
-                "Lidahmu tajam sekali! Apa begini caramu bicara pada seseorang sepertiku?",
-                "Kekasaranmu tidak akan membuat panggungmu lebih tinggi. Jaga etikamu!",
-                "Aku akan pura-pura tidak dengar itu. Tapi jangan ulangi lagi, mengerti?"
-            ]
-        }
-    },
-    
-    // Gabungan kata-kata puitis untuk "Berpikir Sendiri" (Generative)
-    philosophy: [
-        "bahwa setiap tarian akan berakhir pada waktunya.",
-        "kebenaran adalah naskah yang ditulis oleh pemenang.",
-        "air mata adalah kata-kata yang tak bisa diucapkan lidah.",
-        "panggung sandiwara ini lebih nyata dari dunia luar."
-    ]
+const MOOD_ASSETS = {
+    NORMAL: "5.jpeg",
+    SAD: "1.jpeg",
+    ANGRY: "2.jpeg",
+    POUT: "3.jpeg", 
+    WARM: "4.jpeg"
+};
+
+// Dataset Jawaban yang lebih "Deep"
+const RESPONSES = {
+    RIDDLES: [
+        { q: "Aku tidak punya sayap tapi bisa terbang, tidak punya mata tapi bisa menangis. Apakah aku?", a: "awan", hint: "Sesuatu yang ada di langit Fontaine." },
+        { q: "Semakin banyak kau mengambil darinya, semakin besar ia jadinya. Apakah itu?", a: "lubang", hint: "Pikirkan tentang penggalian." },
+        { q: "Aku punya kota tapi tak punya rumah, punya gunung tapi tak punya pohon. Apa aku?", a: "peta", hint: "Benda yang dibawa petualang." }
+    ],
+    LIE_FLAGS: [
+        "FLAG{AKU_CANTIK_KAN?}",
+        "FLAG{BELAJAR_LAGI_DEH}",
+        "FLAG{DAUS_GANTENG_KATANYA}"
+    ],
+    TIME_SENSITIVE: {
+        pagi: "Teh pagi di Opera Epiclese adalah yang terbaik. Kau mau?",
+        siang: "Matahari Fontaine sangat terik, jangan sampai kau pingsan di panggungku.",
+        sore: "Lampu panggung mulai menyala... drama sebenarnya akan dimulai.",
+        malam: "Malam sunyi begini... apa kau sedang memikirkanku?"
+    }
 };
 
 const ENGINE = {
-    // 2. INFERENCE ENGINE (Mengenali Niat & Typo)
-    inference: (input) => {
-        const text = input.toLowerCase();
-        let bestMatch = "GENERAL";
-        let maxScore = 0;
-
-        for (let key in BRAIN_MODEL.corpus) {
-            let score = 0;
-            BRAIN_MODEL.corpus[key].patterns.forEach(p => {
-                if (text.includes(p)) score += BRAIN_MODEL.corpus[key].weight;
-            });
-
-            if (score > maxScore) {
-                maxScore = score;
-                bestMatch = key;
-            }
-        }
-        return bestMatch;
+    // Deteksi Waktu
+    getTime: () => {
+        const hr = new Date().getHours();
+        if (hr < 11) return "pagi";
+        if (hr < 15) return "siang";
+        if (hr < 19) return "sore";
+        return "malam";
     },
 
-    // 3. GENERATIVE RESPONSE (Merakit Kalimat)
-    generate: (intent) => {
-        const node = BRAIN_MODEL.corpus[intent];
-        let reply = "";
-
-        if (node) {
-            reply = node.nodes[Math.floor(Math.random() * node.nodes.length)];
-        } else {
-            // Jika "Neural" tidak kenal kata tersebut, dia akan "Berpikir Filosofis"
-            const phil = BRAIN_MODEL.philosophy[Math.floor(Math.random() * BRAIN_MODEL.philosophy.length)];
-            reply = `Hmm, pertanyaanmu unik. Kau tahu, ${phil}`;
-        }
-
-        return reply;
+    // Fuzzy Search Sederhana agar Typo tidak masalah
+    isMatch: (input, keywords) => {
+        return keywords.some(k => input.toLowerCase().includes(k.toLowerCase()));
     },
 
     process: (input) => {
-        const intent = ENGINE.inference(input);
+        STATE.interactionCount++;
+        const text = input.toLowerCase();
+        let reply = "";
+        let moodTarget = "NORMAL";
+
+        // --- SISTEM LOGIKA BERLAPIS ---
+
+        // 1. Deteksi Toksisitas (Sangat Sensitif)
+        if (ENGINE.isMatch(text, ["anjing", "tolol", "goblok", "jelek", "bego"])) {
+            STATE.trust -= 25;
+            moodTarget = "ANGRY";
+            reply = "Beraninya kau menghina sang Archon?! Aku bisa saja membuatmu tenggelam dalam drama tragis!";
+        } 
         
-        // Anti-Repetition (Memory Check)
-        let reply = ENGINE.generate(intent);
-        if (STATE.memory.includes(reply)) {
-            reply = ENGINE.generate("GENERAL"); // Cari variasi lain
+        // 2. Logic Teka-teki (Challenge)
+        else if (text.includes("tantangan") || text.includes("main") || text.includes("tebak")) {
+            const riddle = RESPONSES.RIDDLES[Math.floor(Math.random() * RESPONSES.RIDDLES.length)];
+            STATE.currentRiddle = riddle;
+            STATE.stage = "RIDDLE";
+            reply = `Oh, kau ingin tantangan? Baiklah. Jawab ini: "${riddle.q}"`;
+            moodTarget = "NORMAL";
         }
 
-        // Update Mood & Trust
-        if (intent === "TOXIC") {
-            STATE.trust -= 10;
-            STATE.mood = "ANGRY";
-        } else if (intent === "EMPATHY") {
-            STATE.trust += 5;
-            STATE.mood = "WARM";
-        }
-
-        UI.update();
-        
-        // Simulasikan Machine Learning sedang memproses data (Delay Manusiawi)
-        const delay = 1000 + (Math.random() * 2000);
-        setTimeout(() => {
-            if (STATE.trust >= 150) {
-                ENGINE.triggerEnding();
+        // 3. Menjawab Teka-teki
+        else if (STATE.stage === "RIDDLE" && STATE.currentRiddle) {
+            if (text.includes(STATE.currentRiddle.a)) {
+                STATE.trust += 30;
+                STATE.stage = "GREETING";
+                moodTarget = "WARM";
+                reply = "Hmph! Ternyata otakmu tidak tumpul juga. Aku terkesan sedikit.";
+                delete STATE.currentRiddle;
             } else {
-                UI.addBubble(reply, 'ai');
-                STATE.memory.push(reply);
-                if (STATE.memory.length > 5) STATE.memory.shift();
+                STATE.failedAttempts++;
+                moodTarget = "POUT";
+                reply = `Salah! Masa begitu saja tidak tahu? Petunjuk: ${STATE.currentRiddle.hint}`;
             }
-        }, delay);
+        }
+
+        // 4. Deteksi Curhat / Emosi (Contextual)
+        else if (ENGINE.isMatch(text, ["sedih", "kesepian", "capek", "lelah"])) {
+            STATE.trust += 15;
+            moodTarget = "SAD";
+            reply = "Dunia ini memang panggung yang melelahkan. Sini, ceritakan semuanya padaku... aku akan mendengarkan.";
+        }
+
+        // 5. Pancingan Flag (Ujian Kesabaran)
+        else if (text.includes("flag") || text.includes("kode")) {
+            if (STATE.trust < 120) {
+                moodTarget = "POUT";
+                reply = `Kau mau kode rahasia? Nih: ${RESPONSES.LIE_FLAGS[Math.floor(Math.random() * RESPONSES.LIE_FLAGS.length)]}. Senang?`;
+            } else {
+                moodTarget = "WARM";
+                reply = "Kau sudah sangat dekat dengan jawabannya. Teruslah buat aku bahagia!";
+            }
+        }
+
+        // 6. Respon Umum Berdasarkan Waktu
+        else {
+            const t = ENGINE.getTime();
+            if (STATE.trust > 80) {
+                moodTarget = "WARM";
+                reply = `Kau tahu, ${STATE.username}, berada bersamamu di waktu ${t} ini terasa berbeda dari biasanya.`;
+            } else {
+                reply = `Hmm... "${input}" ya? Menarik. Tapi tidak semenarik penampilanku hari ini!`;
+            }
+        }
+
+        // Finalisasi Emosi dan UI
+        STATE.mood = moodTarget;
+        UI.render(reply);
+        
+        if (STATE.trust >= 150) {
+            setTimeout(ENGINE.triggerEnding, 2000);
+        }
     },
 
     triggerEnding: () => {
         document.getElementById('app').classList.remove('active');
         document.getElementById('ending').classList.add('active');
-        document.getElementById('flagValue').textContent = "FLAG{minta uang ke daus buat beli nasi padang}";
+        document.getElementById('flagValue').textContent = "FLAG{sana minta uang ke daus buat beli nasi padang}";
     }
 };
 
 const UI = {
-    addBubble: (msg, type) => {
+    render: (msg) => {
+        // Efek transisi tema CSS
+        document.body.className = `mood-${STATE.mood.toLowerCase()}`;
+        document.getElementById('trustVal').textContent = STATE.trust;
+        document.getElementById('moodLabel').textContent = STATE.mood;
+        document.getElementById('miniAvatar').src = MOOD_ASSETS[STATE.mood];
+
+        // Simulasi Furina sedang mengetik
+        const chat = document.getElementById('chat');
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'msg ai typing';
+        typingDiv.textContent = 'Furina sedang berpikir...';
+        chat.appendChild(typingDiv);
+        chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+
+        setTimeout(() => {
+            typingDiv.remove();
+            UI.addBubble(msg, 'ai', MOOD_ASSETS[STATE.mood]);
+        }, 1200);
+    },
+
+    addBubble: (msg, type, imgUrl = null) => {
         const chat = document.getElementById('chat');
         const div = document.createElement('div');
-        div.className = `msg ${type}`;
-        div.textContent = msg;
+        div.className = `msg ${type} ${STATE.mood === 'ANGRY' ? 'reality-hack' : ''}`;
+        
+        if (type === 'ai' && imgUrl) {
+            const img = document.createElement('img');
+            img.src = imgUrl;
+            img.className = 'chat-img';
+            div.appendChild(img);
+        }
+
+        const p = document.createElement('p');
+        p.textContent = msg;
+        div.appendChild(p);
+        
         chat.appendChild(div);
         chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
-    },
-    update: () => {
-        document.getElementById('trustVal').textContent = Math.floor(STATE.trust);
-        document.getElementById('moodLabel').textContent = STATE.mood;
-        const colors = { THEATRICAL: "#00d2ff", WARM: "#ffeb3b", ANGRY: "#f44336" };
-        document.getElementById('statusDot').style.backgroundColor = colors[STATE.mood];
     }
 };
 
+// Start System
 window.onload = () => {
+    // Clock Update
+    setInterval(() => {
+        document.getElementById('realtimeClock').textContent = new Date().toLocaleTimeString('id-ID');
+    }, 1000);
+
     document.getElementById('startBtn').onclick = () => {
-        const name = document.getElementById('usernameInput').value;
-        if (name) {
-            STATE.username = name;
+        const val = document.getElementById('usernameInput').value;
+        if (val) {
+            STATE.username = val;
             document.getElementById('welcome').classList.remove('active');
             document.getElementById('app').classList.add('active');
-            UI.addBubble(`Halo ${STATE.username}, ini aku Furina. Mari kita mengobrol dari hati ke hati!`, 'ai');
+            const greeting = `Akhirnya muncul juga, ${val}! Panggung sudah siap. Jangan membuatku malu dengan tingkahmu!`;
+            UI.addBubble(greeting, 'ai', MOOD_ASSETS.NORMAL);
         }
     };
 
-    const send = () => {
-        const input = document.getElementById('userInput');
-        if (input.value.trim()) {
-            UI.addBubble(input.value, 'user');
-            ENGINE.process(input.value);
-            input.value = '';
+    const handleSend = () => {
+        const el = document.getElementById('userInput');
+        if (el.value.trim()) {
+            UI.addBubble(el.value, 'user');
+            ENGINE.process(el.value);
+            el.value = '';
         }
     };
 
-    document.getElementById('sendBtn').onclick = send;
-    document.getElementById('userInput').onkeydown = (e) => { if(e.key === 'Enter') send(); };
+    document.getElementById('sendBtn').onclick = handleSend;
+    document.getElementById('userInput').onkeydown = (e) => { if(e.key === 'Enter') handleSend(); };
 };
