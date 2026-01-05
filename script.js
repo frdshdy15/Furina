@@ -1,21 +1,24 @@
 "use strict";
 
 /* ===============================
-   GLOBAL STATE & ASSETS (UPDATED)
+   GLOBAL STATE & ASSETS
    ================================ */
 const STATE = {
     username: null,
     trust: 20,
     mood: "normal",
-    rank: "Figuran",
+rank: "Figuran", // Fitur Baru: Pangkat
     ending: null,
     lastInput: "",
     repeat: 0,
-    startTime: Date.now(),
-    // --- PENAMBAHAN FITUR KRITIS ---
-    lastTopic: null, // Mengingat topik terakhir (misal: "makanan", "hinaan")
-    conversationDepth: 0, // Seberapa panjang obrolan nyambung
-    grudge: 0 // Dendam sementara (kalau user kasar, dia bakal jutek bbrp turn)
+    startTime: Date.now()
+};
+
+const ASSETS = {
+    normal: "5.jpeg",
+    warm: "4.jpeg",
+    angry: "2.jpeg",
+    sad: "1.jpeg"
 };
 
 /* ===============================
@@ -75,9 +78,10 @@ function resetInactivityTimer() {
    ================================ */
 
 /* ===============================
-   ADVANCED ML ENGINE: THE CRITICAL BRAIN
+   ADVANCED ML ENGINE: THE SUPER BRAIN
    =============================== */
 const BRAIN = {
+    // Memory jangka pendek untuk melacak perilaku user
     context: {
         lastIntent: null,
         aggressiveCount: 0,
@@ -87,111 +91,75 @@ const BRAIN = {
         topicHistory: []
     },
 
-    // 1. CLASSIFIER (Deteksi Niat)
+    // 1. INTENT CLASSIFIER (Deteksi Niat Super Detail)
     classifyIntent(text) {
-        if (/(daus|pembuat|developer|sutradara).*(orang mana|asal|tinggal|rumah|siapa|lahir)/i.test(text)) return "CREATOR_ORIGIN";
-        if (/(kencan|dating|jalan|pacaran|nikah|istri|suami|date)/i.test(text) && /(ayo|yuk|mau|bisa)/i.test(text)) return "PROPOSAL";
-        if (/(sedih|nangis|kecewa|hancur|putus|gagal|depresi)/i.test(text)) return "EMPATHY_NEEDED";
-        if (/(cantik|manis|imut|mempesona|hebat|luar biasa|idolaku)/i.test(text)) return "FLATTERING";
-        if (/(bodoh|tolol|goblok|jelek|buruk|payah|benci|anjing|bangsat)/i.test(text)) return "AGGRESSIVE_ATTACK";
-        
-        // Fitur Baru: Deteksi Persetujuan/Penolakan (Untuk Konteks)
-        if (/^(ya|mau|boleh|oke|siap|tentu)$/i.test(text)) return "AGREEMENT";
-        if (/^(gak|nggak|tidak|jangan|ogah|malas)$/i.test(text)) return "DISAGREEMENT";
+        // A. Detection: Asal-Usul Creator (Daus)
+        if (/(daus|pembuat|developer|sutradara).*(orang mana|asal|tinggal|rumah|siapa|lahir)/i.test(text)) {
+            this.context.mentionDausCount++;
+            return "CREATOR_ORIGIN";
+        }
 
-        // Fitur Baru: Deteksi Pertanyaan "Kenapa" (Kritis)
-        if (/(kenapa|mengapa|alasannya|sebabnya)/i.test(text)) return "ELABORATION";
+        // B. Detection: Ajakan Kencan/Hubungan
+        if (/(kencan|dating|jalan|pacaran|nikah|istri|suami|date|keluar|nonton)/i.test(text) && 
+            /(ayo|yuk|mau gak|bisakah|maukah|kita)/i.test(text)) {
+            return "PROPOSAL";
+        }
+
+        // C. Detection: Curhat/Emosi Negatif
+        if (/(sedih|nangis|kecewa|hancur|putus|gagal|depresi|lelah|capek|sendiri|kesepian)/i.test(text)) {
+            this.context.isCrying = true;
+            return "EMPATHY_NEEDED";
+        }
+
+        // D. Detection: Pujian Berlebih
+        if (/(cantik|manis|imut|mempesona|hebat|luar biasa|idolaku|pujaan|sempurna|istimewa)/i.test(text)) {
+            this.context.complimentCount++;
+            return "FLATTERING";
+        }
+
+        // E. Detection: Hinaan/Toxic (Aggressive)
+        if (/(bodoh|tolol|goblok|jelek|buruk|payah|benci|anjing|bangsat|tolol|idiot)/i.test(text)) {
+            this.context.aggressiveCount++;
+            return "AGGRESSIVE_ATTACK";
+        }
+
+        // F. Detection: Pertanyaan Meta/Sistem
+        if (/(siapa kamu sebenarnya|kamu robot|kamu ai|cara kerja|coding)/i.test(text)) {
+            return "META_QUERY";
+        }
 
         return "GENERAL";
     },
 
+    // 2. DYNAMIC SENTIMENT ANALYSIS (Skala Skor Matematika)
     analyzeSentiment(text) {
         const words = {
-            positive: ["bagus", "keren", "hebat", "cinta", "bangga", "terpesona", "terima kasih", "syukur", "bahagia", "senang"],
-            negative: ["jahat", "kejam", "bohong", "palsu", "muak", "bosan", "berhenti", "diam", "pergi", "salah", "buruk", "jelek"],
-            intensifiers: ["sangat", "banget", "sekali", "terlalu", "paling"]
+            positive: ["bagus", "keren", "hebat", "cinta", "bangga", "terpesona", "terima kasih", "syukur", "bahagia", "senang", "setuju"],
+            negative: ["jahat", "kejam", "bohong", "palsu", "muak", "bosan", "berhenti", "diam", "pergi", "salah", "buruk"],
+            intensifiers: ["sangat", "banget", "sekali", "terlalu", "paling", "amat"]
         };
+
         let score = 0;
         let multiplier = 1.0;
-        words.intensifiers.forEach(w => { if (text.includes(w)) multiplier = 1.5; });
-        words.positive.forEach(w => { if (text.includes(w)) score += 1 * multiplier; });
-        words.negative.forEach(w => { if (text.includes(w)) score -= 1.5 * multiplier; }); // Negatif lebih ngefek
+
+        // Cek penguat kalimat (Intensifier)
+        words.intensifiers.forEach(w => { if (text.includes(w)) multiplier = 1.8; });
+
+        words.positive.forEach(w => { if (text.includes(w)) score += 0.2 * multiplier; });
+        words.negative.forEach(w => { if (text.includes(w)) score -= 0.3 * multiplier; });
+
         return score;
     },
 
-    // 3. LOGIC PROCESSING (BAGIAN PALING PENTING - LEBIH KRITIS)
-    process(rawText) {
+         // 3. LOGIC PROCESSING (Pengambilan Keputusan)
+        process(rawText) {
         const text = rawText.toLowerCase().trim();
         const intent = this.classifyIntent(text);
         const sentiment = this.analyzeSentiment(text);
 
-        // Update Trust
-        STATE.trust += Math.round(sentiment * 2); // Trust naik/turun real-time
-
-        // --- SISTEM DENDAM (GRUDGE SYSTEM) ---
-        // Jika user kasar, Furina akan ingat selama 3 giliran chat
-        if (intent === "AGGRESSIVE_ATTACK") {
-            STATE.grudge = 3; 
-            STATE.trust -= 15;
-            return {
-                reply: "Jaga lisanmu! Aku tidak akan meladeni figuran kasar sepertimu sampai kau belajar tata krama!",
-                mood: "angry"
-            };
-        }
-
-        // Jika masih ada dendam, respon akan jutek apapun inputnya
-        if (STATE.grudge > 0) {
-            STATE.grudge--; // Kurangi counter dendam
-            if (intent === "FLATTERING") {
-                 return { reply: "Hmph, rayuanmu tidak akan mempan semudah itu setelah apa yang kau katakan tadi.", mood: "angry" };
-            }
-            // Abaikan input user, balas ketus
-            return { reply: "Aku masih kesal padamu. Jangan harap aku bicara manis.", mood: "angry" };
-        }
-
-        // --- LOGIKA KONTEKSTUAL (MERAMBAT) ---
-        
-        // 1. Jika user bilang "Ya/Mau" (AGREEMENT)
-        if (intent === "AGREEMENT") {
-            if (STATE.lastTopic === "makanan") {
-                return { reply: "Bagus! Nanti kita pergi ke toko kue. Pastikan dompetmu tebal ya!", mood: "warm" };
-            } else if (STATE.lastTopic === "hukuman") {
-                return { reply: "Pengakuan diterima. Bersiaplah menerima vonis di Epiclese!", mood: "normal" };
-            } else if (STATE.lastTopic === "kencan") {
-                return { reply: "Hoho! Kau bersemangat sekali. Jemput aku jam 7 malam, jangan telat sedetikpun!", mood: "warm" };
-            } else {
-                return { reply: "Hmph, kau setuju saja padahal aku lupa kita sedang bahas apa. Dasar penurut.", mood: "normal" };
-            }
-        }
-
-        // 2. Jika user bertanya "Kenapa?" (ELABORATION)
-        if (intent === "ELABORATION") {
-            // Furina mengarang alasan dramatis
-            return { 
-                reply: "Kenapa? Karena itulah kehendak naskah! Dan sebagai bintang utama, aku hanya mengikuti alur yang paling dramatis!", 
-                mood: "normal" 
-            };
-        }
-
-        // 3. Respon Kritis terhadap Input Pendek
-        if (text.length < 4 && intent === "GENERAL") {
-            STATE.trust -= 2;
-            return {
-                reply: "Singkat sekali... Apakah otakmu kehabisan kosakata, atau kau memang malas bicara denganku?",
-                mood: "angry"
-            };
-        }
-
-        // 4. Update Topik Terakhir (Untuk Memory Giliran Berikutnya)
-        if (text.includes("makan") || text.includes("kue")) STATE.lastTopic = "makanan";
-        else if (text.includes("jalan") || text.includes("kencan")) STATE.lastTopic = "kencan";
-        else if (text.includes("maaf") || text.includes("salah")) STATE.lastTopic = "hukuman";
-        else STATE.lastTopic = "general";
-
-        // Kembalikan null agar script lanjut mengecek DATASET jika tidak ada logic di atas yang kena
-        return null; 
-    }
-};
+        // Update Memori Topik agar sistem tidak bingung/crash
+        this.context.topicHistory.push(intent);
+        if (this.context.topicHistory.length > 10) this.context.topicHistory.shift();
 
         // Update Trust Berdasarkan Sentimen Global
         STATE.trust += Math.round(sentiment * 15);
@@ -2308,13 +2276,13 @@ const DATASET = [
         mood: "warm", trust: +20
     }
 
-]
+
 
     /* -------------------------------------------------------
        SPACE KOSONG: PASTE RIBUAN BARIS DATASET KAMU DI SINI
        ------------------------------------------------------- */
 
-    // Contoh format: { match: /kata/i, reply: ["opsi1"], mood: "normal", trust: 1 },
+    
 
 ];
 
