@@ -2,26 +2,32 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Furina: The Final Judgment</title>
+    
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <div id="loading" class="screen active">
+    <div id="loading" class="screen">
         <div class="loader"></div>
         <p>Mempersiapkan Panggung Opera...</p>
     </div>
 
-    <div id="welcome" class="screen">
-        <h1>ATURAN MAIN</h1>
+    <div id="welcome" class="screen active">
+        <div class="profile-header">
+            <img src="5.jpeg" alt="Furina Profile" class="avatar-main">
+        </div>
+        
+        <h1>THE FINAL JUDGMENT</h1>
+
         <div class="rules">
             <p><i class="fas fa-star"></i> Furina adalah bintang utama. Jaga etikamu.</p>
             <p><i class="fas fa-shield-alt"></i> Anti-Cheat Aktif: Jangan Copy-Paste.</p>
             <p><i class="fas fa-brain"></i> Furina mengingat kesalahanmu (Sistem Dendam).</p>
         </div>
-        
+
         <div class="credits">
             <p>Developed by: <strong>Frdshdy</strong></p>
             <a href="https://www.instagram.com/frdshdy_15?igsh=b29reXBxNDFhOHBk" target="_blank" class="social-btn">
@@ -29,13 +35,16 @@
             </a>
         </div>
 
-        <input type="text" id="usernameInput" placeholder="Masukkan namamu, figuran...">
-        <button id="startBtn">Mulai Pertunjukan</button>
+        <div class="login-controls">
+            <input type="text" id="usernameInput" placeholder="Masukkan namamu, figuran..." autocomplete="off">
+            <button id="startBtn">Mulai Pertunjukan</button>
+        </div>
     </div>
 
     <div id="app" class="screen">
         <div class="header">
             <div class="status-container">
+                <img src="5.jpeg" id="miniAvatar" class="mini-avatar">
                 <div id="statusDot" class="status-dot"></div>
                 <span id="moodLabel">Theatrical</span>
             </div>
@@ -46,8 +55,8 @@
         <div id="chat" class="chat-container"></div>
 
         <div class="input-area">
-            <input type="text" id="userInput" placeholder="Ketik pesanmu..." disabled>
-            <button id="sendBtn" disabled><i class="fas fa-paper-plane"></i></button>
+            <input type="text" id="userInput" placeholder="Ketik pesanmu..." autocomplete="off">
+            <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
 
@@ -57,7 +66,7 @@
             <p>REWARD FLAG:</p>
             <code id="flagValue">...DECRYPTING...</code>
         </div>
-        <button onclick="location.reload()">Main Lagi</button>
+        <button onclick="location.reload()" class="btn-retry">Main Lagi</button>
     </div>
 
     <script src="script.js"></script>
