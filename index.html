@@ -3,87 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Furina Project</title>
+    <title>Furina: The Final Judgment</title>
     
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="mood-normal">
 
-    <div id="screen-loading" class="screen active">
-        <div class="loader"></div>
-        <p>Mempersiapkan Panggung...</p>
-    </div>
+    <div class="vignette"></div>
 
-    <div id="screen-welcome" class="screen">
-        <div class="content-wrap">
-            <div class="avatar-circle">
-                <img src="5.jpeg" alt="Furina">
-            </div>
-            <h1>THE FINAL JUDGMENT</h1>
-            
-            <div class="rules-list">
-                <p><i class="fas fa-star"></i> Furina adalah bintang utama.</p>
-                <p><i class="fas fa-shield-alt"></i> Dilarang Copy-Paste.</p>
-            </div>
+    <section id="screen-loading" class="screen active">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <h2 class="loading-text">Mempersiapkan Panggung...</h2>
+        </div>
+    </section>
 
-            <div class="input-box">
-                <input type="text" id="usernameInput" placeholder="Masukkan namamu..." autocomplete="off">
-                <button id="btn-to-prologue">MASUK</button>
+    <section id="screen-welcome" class="screen">
+        <div class="container welcome-wrap">
+            <div class="hero-section">
+                <div class="avatar-frame">
+                    <img src="5.jpeg" alt="Furina" class="img-main">
+                </div>
+                <h1 class="font-cinzel">FURINA DE FONTAINE</h1>
+                <p class="subtitle">"Keadilan, Sandiwara, dan Takdirmu."</p>
             </div>
 
-            <div class="dev-info">
-                <p>Dev: Frdshdy | <i class="fab fa-instagram"></i> frdshdy_15</p>
+            <div class="form-card">
+                <input type="text" id="usernameInput" placeholder="Sebutkan namamu, penonton..." autocomplete="off">
+                <button id="btn-to-prologue" class="btn-main">MULAI PERTUNJUKAN</button>
+            </div>
+
+            <div class="footer-note">
+                <p>Designed by <strong>Frdshdy</strong></p>
+                <div class="socials">
+                    <a href="#"><i class="fab fa-instagram"></i> frdshdy_15</a>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div id="screen-prologue" class="screen">
-        <div class="content-wrap">
+    <section id="screen-prologue" class="screen">
+        <div class="container story-wrap">
             <div class="story-card">
-                <img src="5.jpeg" id="img-prologue" class="img-story">
-                <div id="text-prologue" class="text-story">
-                    </div>
-                <button id="btn-to-chat">LANJUTKAN</button>
+                <div class="story-img-box">
+                    <img src="5.jpeg" id="img-prologue" alt="Story">
+                </div>
+                <div class="story-body">
+                    <div id="text-prologue" class="typewriter">
+                        </div>
+                </div>
+                <button id="btn-to-chat" class="btn-main">LANJUTKAN <i class="fas fa-arrow-right"></i></button>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div id="screen-chat" class="screen">
-        <div class="header-chat">
-            <div class="info-user">
-                <img src="5.jpeg" id="mini-avatar" class="img-mini">
-                <div>
-                    <div id="mood-label">Theatrical</div>
+    <section id="screen-chat" class="screen">
+        <header class="chat-header">
+            <div class="user-meta">
+                <img src="5.jpeg" id="mini-avatar" class="avatar-mini">
+                <div class="user-text">
+                    <span id="mood-label">THEATRICAL</span>
                     <small id="clock">00:00</small>
                 </div>
             </div>
-            <div class="trust-pill">
-                Trust: <span id="trust-val">20</span>
+            <div class="stats">
+                <div class="trust-badge">
+                    <i class="fas fa-heart"></i> <span id="trust-val">20</span>
+                </div>
             </div>
-        </div>
+        </header>
 
-        <div id="chat-box" class="chat-area">
+        <main id="chat-box" class="chat-container">
+            </main>
+
+        <footer class="chat-input-bar">
+            <div class="input-group">
+                <input type="text" id="chatInput" placeholder="Bicaralah..." autocomplete="off">
+                <button id="btn-send"><i class="fas fa-paper-plane"></i></button>
             </div>
+        </footer>
+    </section>
 
-        <div class="input-area">
-            <input type="text" id="chatInput" placeholder="Ketik pesan..." autocomplete="off">
-            <button id="btn-send"><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </div>
-
-    <div id="screen-ending" class="screen">
-        <div class="content-wrap">
-            <div class="end-card">
+    <section id="screen-ending" class="screen">
+        <div class="container ending-wrap">
+            <div class="ending-card">
+                <i class="fas fa-trophy gold-icon"></i>
                 <h2>PANGGUNG USAI</h2>
-                <div class="flag-box">
-                    <p>YOUR REWARD:</p>
+                <div class="reward-box">
+                    <span>REWARD KODE:</span>
                     <code id="flag-text">DECRYPTING...</code>
                 </div>
-                <button onclick="location.reload()">MAIN LAGI</button>
+                <button class="btn-main" onclick="location.reload()">MAIN LAGI</button>
             </div>
         </div>
-    </div>
+    </section>
 
     <script src="script.js"></script>
 </body>
