@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Furina — Trial of Trust</title>
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Cinzel:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -16,18 +16,25 @@
         <div class="modal-window">
             <div class="modal-header">
                 <img src="5.jpeg" alt="Furina" class="modal-avatar">
-                <h2 class="font-cinzel">PERATURAN PANGGUNG</h2>
+                <h2 class="font-cinzel">PANGGUNG SANDIWARA</h2>
             </div>
             <div class="modal-body">
-                <ul class="rules-list">
-                    <li><i class="fas fa-star"></i> Furina adalah bintang utama.</li>
-                    <li><i class="fas fa-shield-alt"></i> Jaga etikamu atau panggung ditutup.</li>
-                    <li><i class="fas fa-heart"></i> Trust menentukan akhir ceritamu.</li>
-                </ul>
-                <input type="text" id="usernameInput" placeholder="Masukkan namamu, figuran..." autocomplete="off">
-            </div>
-            <div class="modal-footer">
-                <button id="btn-start" class="btn-primary">MULAI PERTUNJUKAN</button>
+                <div id="tutorial-step">
+                    <p style="font-size: 13px; margin-bottom: 15px; color: #64748b;">Selamat datang, figuran. Sebelum tirai diangkat, pahami aturan mainnya:</p>
+                    <ul class="rules-list">
+                        <li><i class="fas fa-theater-masks"></i> <b>Bicara Puitis:</b> Furina menyukai kata-kata indah.</li>
+                        <li><i class="fas fa-heart-broken"></i> <b>Hati-hati:</b> Kata kasar akan menurunkan Trust secara drastis!</li>
+                        <li><i class="fas fa-skull"></i> <b>Game Over:</b> Jika Trust mencapai -50, kau akan diusir dari panggung.</li>
+                        <li><i class="fas fa-trophy"></i> <b>Victory:</b> Capai Trust 100 untuk melihat jati diri sang Diva.</li>
+                    </ul>
+                    <button id="btn-next-step" class="btn-primary">SAYA MENGERTI</button>
+                </div>
+
+                <div id="name-step" style="display: none;">
+                    <p style="margin-bottom: 15px;">Sekarang, sebutkan namamu untuk dicatat dalam naskah:</p>
+                    <input type="text" id="usernameInput" placeholder="Masukkan namamu, figuran..." autocomplete="off">
+                    <button id="btn-start" class="btn-primary">MULAI PERTUNJUKAN</button>
+                </div>
             </div>
         </div>
     </div>
@@ -50,8 +57,24 @@
         </div>
     </div>
 
+    <div id="modal-gameover" class="modal-overlay">
+        <div class="modal-window danger-style">
+            <div class="modal-header">
+                <div class="glow-circle" style="background: var(--danger-red);">🚫</div>
+                <h2 class="font-cinzel" style="color: var(--danger-red);">VONIS MATI</h2>
+            </div>
+            <div class="modal-body">
+                <p>Enyah kau, figuran! Kata-katamu telah menodai kesucian panggung ini.</p>
+                <p style="font-size: 12px; margin-top: 10px; color: #64748b;">Trust mencapai batas minimum (-50)</p>
+            </div>
+            <div class="modal-footer">
+                <button onclick="location.reload()" class="btn-primary" style="background: var(--danger-red);">TINGGALKAN PANGGUNG</button>
+            </div>
+        </div>
+    </div>
+
     <div class="app-container">
-        
+
         <header class="main-header">
             <div class="header-left">
                 <div class="avatar-wrapper">
@@ -82,7 +105,7 @@
                 </button>
             </div>
             <div class="credits">
-                By <b>Daus</b> | @frdshdy_15
+                By <b>Firdaus Hidayatullah</b> | @frdshdy_15
             </div>
         </footer>
 
