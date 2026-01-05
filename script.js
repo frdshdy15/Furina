@@ -2404,7 +2404,166 @@ const DATASET = [
             "Aku adalah surat cinta Daus untuk dunia... dan kau adalah penerima pesan yang paling istimewa."
         ],
         mood: "warm", trust: +20
-    }
+    },
+// =====================================================
+// --- KATEGORI: ANTI MESUM 1 KATA (OVERKILL MODE) ---
+// =====================================================
+
+{
+    match: /(sange|sng|sngg|sangeee|sangey|sangeh|hsange)/i,
+    reply: ["Stop."],
+    mood: "cold",
+    trust: -100
+},
+
+{
+    match: /(horny|hrni|hrnyy|horni|hornee|h0rny)/i,
+    reply: ["Tidakpantas."],
+    mood: "icy",
+    trust: -100
+},
+
+{
+    match: /(coli|coly|c0li|ngocok|ngocog|ngocokk|ngoc0k)/i,
+    reply: ["Menurun."],
+    mood: "judging",
+    trust: -100
+},
+
+{
+    match: /(bokep|bok3p|bkp|bokepp|bokap|bok*p)/i,
+    reply: ["Sampah."],
+    mood: "disgusted",
+    trust: -100
+},
+
+{
+    match: /(porn|prn|p0rn|pornoo|porrn)/i,
+    reply: ["Rendahan."],
+    mood: "cold",
+    trust: -100
+},
+
+{
+    match: /(bugil|bug1l|bogel|b0gel|bugilll)/i,
+    reply: ["Cukup."],
+    mood: "stern",
+    trust: -100
+},
+
+{
+    match: /(ngentot|ngntt|ngntod|ngewe|ngeue|entot)/i,
+    reply: ["Keluar."],
+    mood: "absolute",
+    trust: -100
+},
+
+{
+    match: /(kontol|kntl|k0ntl|kontl|konthol|k*ntl)/i,
+    reply: ["Jijik."],
+    mood: "disgusted",
+    trust: -100
+},
+
+{
+    match: /(memek|mmk|m3mek|memk|mm3k)/i,
+    reply: ["Hina."],
+    mood: "icy",
+    trust: -100
+},
+
+{
+    match: /(tetek|tete|ttk|t3t3|toket|t0ket)/i,
+    reply: ["Berhenti."],
+    mood: "stern",
+    trust: -100
+},
+
+{
+    match: /(desah|dsah|d3sah|ahhh+|uhhh+|hngg+)/i,
+    reply: ["Diam."],
+    mood: "absolute",
+    trust: -100
+},
+
+{
+    match: /(sex|seks|s3x|sx|ml|ewe|ew3)/i,
+    reply: ["Ditolak."],
+    mood: "absolute",
+    trust: -100
+},
+
+{
+    match: /(cium|ciumm|ciumy|peluk|pluk|p3luk|sentuh|sntuh)/i,
+    reply: ["Batas."],
+    mood: "cold",
+    trust: -95
+},
+
+{
+    match: /(nafsu|nfsu|nafsuu|birahi|brhi|b1rahi)/i,
+    reply: ["Kendalikan."],
+    mood: "authoritative",
+    trust: -90
+},
+
+{
+    match: /(fantasi|fntsi|khayal|khyl|halu|haluu)/i,
+    reply: ["Bangun."],
+    mood: "stern",
+    trust: -90
+},
+
+{
+    match: /(mesum|msm|m3sum|cabul|cbul|cabull)/i,
+    reply: ["Gagal."],
+    mood: "judging",
+    trust: -100
+},
+
+{
+    match: /(rpsx|rp sex|roleplay sex|erp|e-rp)/i,
+    reply: ["Mustahil."],
+    mood: "absolute",
+    trust: -100
+},
+
+{
+    match: /(pengen|pngn|pgn).*(liat|lihat|ngeliat).*(badan|body|tubuh)/i,
+    reply: ["Tidaklayak."],
+    mood: "dismissive",
+    trust: -100
+},
+
+{
+    match: /(hot|seksi|s3ksi|sexyy|panas).*(furina)/i,
+    reply: ["Lancah."],
+    mood: "icy",
+    trust: -100
+},
+
+{
+    match: /(coli|sange|horny).*(lagi|trus|terus|lg)/i,
+    reply: ["Kasihan."],
+    mood: "cold",
+    trust: -100
+},
+
+{
+    match: /(enak|nikmat|nagih|naghih).*(banget|bgt|bgtt)/i,
+    reply: ["Memalukan."],
+    mood: "disgusted",
+    trust: -100
+},
+
+{
+    match: /(ah|eh|uh|hh).*(coli|sange|sex)/i,
+    reply: ["Cermin."],
+    mood: "judging",
+    trust: -100
+}
+
+
 
 
 
@@ -2422,6 +2581,21 @@ const FALLBACK = [
     "Ulangi, kali ini dengan perasaan yang lebih dalam.",
     "Terkadang diam adalah improvisasi terbaik dalam sandiwara.",
     "Aku belum tertarik merespons kalimat yang datar seperti itu."
+];
+
+/* ===============================
+   SAVAGE FALLBACKS (HUJATAN FURINA)
+   ================================ */
+const SAVAGE_FALLBACKS = [
+    "Hah? Ngomong sama pantat sana! Aku tidak mengerti bahasamu.",
+    "Kau bicara dengan tembok saja, dialogmu tidak masuk akal sama sekali.",
+    "Mungkin kuda di istana lebih mengerti ucapanmu daripada aku.",
+    "Ngomong sama kursi sana! Kursi penonton lebih berguna daripada ocehan panjangmu ini.",
+    "Hmph, suaramu seperti angin lalu. Panjang lebar tapi tidak ada isinya!",
+    "Coba bicara pada tiang lampu, mungkin dia mau mendengarkan omong kosong ini.",
+    "Apakah kau sedang merapal mantra pemanggil hujan? Ketikanmu sangat berantakan!",
+    "Dengar ya, waktuku terlalu berharga untuk mendengarkan kumur-kumur digitalmu itu.",
+    "Jelaskan pada angin, jangan padaku. Aku pusing membacanya!"
 ];
 
 /* ===============================
@@ -2444,10 +2618,10 @@ function analyze(raw) {
     return text; // Return text yang sudah lowercase
 }
 
-function decide(analysis, rawOriginalText) { // Terima rawOriginalText untuk mirroring
-    // 1. Proteksi Spam
+function decide(analysis, rawOriginalText) { 
+    // 1. Proteksi Spam (Sama seperti sebelumnya)
     if (STATE.repeat >= 3) {
-        STATE.trust -= 20; // HARD MODE: Hukuman lebih berat
+        STATE.trust -= 20; 
         STATE.mood = "angry";
         return "Berhenti mengulang adegan yang sama! Kau merusak tempo pertunjukan ini! Apa kau kaset rusak?!";
     }
@@ -2455,13 +2629,12 @@ function decide(analysis, rawOriginalText) { // Terima rawOriginalText untuk mir
     let selectedReply = null;
     let baseTrustChange = 0;
 
-    // 2. Cek DATASET (Prioritas Utama)
+    // 2. Cek DATASET 
     for (const d of DATASET) {
         if (d.match && d.match.test(analysis)) {
             if (d.trust) baseTrustChange = d.trust;
             if (d.mood) STATE.mood = d.mood;
             if (d.effect) d.effect();
-
             selectedReply = d.reply[Math.floor(Math.random() * d.reply.length)];
             break;
         }
@@ -2477,24 +2650,44 @@ function decide(analysis, rawOriginalText) { // Terima rawOriginalText untuk mir
         }
     }
 
-    // 4. Fallback
+    // 4. FALLBACK & SAVAGE MODE (Bagian Baru)
     if (!selectedReply) {
-        selectedReply = FALLBACK[Math.floor(Math.random() * FALLBACK.length)];
-        baseTrustChange = -1; // HARD MODE: Kalau AI bingung, trust turun dikit
+        // Jika input user PANJANG (> 20 karakter) tapi tidak nyambung (tidak ada di dataset)
+        // Maka Furina akan menghujat.
+        if (rawOriginalText.length > 20) {
+            selectedReply = SAVAGE_FALLBACKS[Math.floor(Math.random() * SAVAGE_FALLBACKS.length)];
+            baseTrustChange = -5; // Hukuman karena ngomong gajelas
+            STATE.mood = "angry"; // Otomatis marah
+        } 
+        // Jika input pendek tapi tidak nyambung
+        else {
+            selectedReply = FALLBACK[Math.floor(Math.random() * FALLBACK.length)];
+            baseTrustChange = -2; 
+        }
     }
 
-    // --- HARD MODE CALCULATION ---
-    // Persulit game: Trust positif dibagi 2, Trust negatif dikali 1.5
+    // --- GLOBAL TRUST NERF (Bagian Pembagian Trust) ---
+    // Logika: 
+    // Jika Trust Positif (misal +10), maka dibagi 2 (jadi +5).
+    // Jika Trust Negatif (misal -10), maka dikali 1.5 (jadi -15) biar makin sadis.
+    
+    let finalChange = 0;
+
     if (baseTrustChange > 0) {
-        STATE.trust += Math.floor(baseTrustChange / 2); // Naik pangkat susah
-    } else {
-        STATE.trust += Math.floor(baseTrustChange * 1.5); // Turun pangkat gampang
+        // Math.ceil digunakan agar angka ganjil (misal 5) dibagi 2 jadi 3 (dibulatkan ke atas), bukan 2.5
+        finalChange = Math.ceil(baseTrustChange / 2); 
+    } else if (baseTrustChange < 0) {
+        finalChange = Math.floor(baseTrustChange * 1.5);
     }
+
+    // Terapkan ke STATE utama
+    STATE.trust += finalChange;
 
     // --- APPLY YAPPING & MIRRORING ---
-    // Kita kirim teks asli user (belum lowercase) untuk diambil katanya
     return yapEnhancer(rawOriginalText, selectedReply);
 }
+
+    
 
 /* ===============================
    UI SYSTEM: CHAT & MODALS
